@@ -1,25 +1,34 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 
 const ListProduct = () => {
+  // menyimpan data product
   const [products, setProduct] = useState([]);
+  // ambil data dari query route
   const [searchParams, setSearchParams] = useSearchParams([]);
+  // ambil data product by brand
   const getProducts = async (idBrand) => {
     const res = await apiAdapter.get(`/product?brand=${idBrand}`);
     const data = await res.data.data;
+    // simpan ke state product
     setProduct(data);
     console.log(idBrand);
   };
 
-  useEffect(() => {
-    getProducts(searchParams.get("brand"));
-  }, [searchParams]);
+  useEffect(
+    () => {
+      // ambil data product berdasarkan data dari route query brand
+      getProducts(searchParams.get("brand"));
+    }, // ambil kembali data product, jika terjadi perubahan pada query route
+    [searchParams]
+  );
   return (
     <>
+      {/* jumlah produk */}
       <p className="mb-3 text-sm">2.359 handphone tersedia</p>
       <main className="grid grid-cols-2 gap-x-6 gap-y-5 px-1 lg:mt-1 lg:grid-cols-5 lg:gap-x-4">
+        {/* tampilkan produk berdasarkan data dari state products */}
         {products.map((product) => (
           <article
             class="relative rounded-xl bg-white p-3 shadow-lg hover:shadow-xl"

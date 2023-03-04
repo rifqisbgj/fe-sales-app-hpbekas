@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/20/solid";
 import MobileFilter from "./MobileFilter";
 import apiAdapter from "../../api/apiAdapter";
+// get or add query to route
 import useUrlState from "@ahooksjs/use-url-state";
 
 const sortOptions = [
@@ -50,14 +51,12 @@ const FilterProduct = () => {
       ...v,
       isCheck: false,
     }));
-    // console.log([...filterState.brand]);
     brandFilterData.map((a) =>
       // menset nilai isCheck pada brandFilterData, jika idnya terdapat pada filterState
       [...filterState.brand].includes(`${a.id}`)
         ? (a.isCheck = true)
         : (a.isCheck = false)
     );
-    console.log(brandFilterData);
     setDataBrand(brandFilterData);
   };
 
@@ -69,19 +68,29 @@ const FilterProduct = () => {
   );
 
   const handleChange = (e) => {
+    // ambil value pada url query dengan var brand
     const { brand } = filterState;
+    // ambil value dan status checkbox
     const { value, checked } = e.target;
+    /* ambil index data brand yg idnya sama dengan value input checkbox.
+    Digunakan untuk merubah status isCheck pada data brand tersebut
+    */
     const indx = [...brandData].findIndex((obj) => obj.id == value);
     if (checked) {
+      // set status check ke true
       [...brandData][indx].isCheck = true;
+      // masukan pada query route brand
       setStateFilter({ brand: [...brand, value] });
     } else {
+      // set status check ke false
       [...brandData][indx].isCheck = false;
+      // hapus pada query route
       setStateFilter({ brand: [...brand].filter((e) => e !== value) });
     }
   };
   return (
     <div>
+      {/* Ambil UI filter untuk tampilan mobile dan passing state dataBrand serta state status mobileFilters */}
       <MobileFilter
         brandData={brandData}
         mobileFiltersOpen={mobileFiltersOpen}
@@ -158,6 +167,7 @@ const FilterProduct = () => {
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
             {/* Filters */}
             <form className="hidden lg:block bg-white h-fit px-3 rounded-lg">
+              {/* Filter by Brands */}
               <Disclosure as="div" defaultOpen className="border-b py-6">
                 {({ open }) => (
                   <>
@@ -189,11 +199,6 @@ const FilterProduct = () => {
                               defaultValue={brandoption.id}
                               type="checkbox"
                               onChange={handleChange}
-                              // {...([filterState.brand].includes(
-                              //   `${brandoption.id}`
-                              // )
-                              //   ? (lala = true)
-                              //   : (lala = false))}
                               checked={brandoption.isCheck}
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
@@ -207,6 +212,7 @@ const FilterProduct = () => {
                   </>
                 )}
               </Disclosure>
+              {/* Filter by price */}
               <Disclosure as="div" defaultOpen className="py-6">
                 {({ open }) => (
                   <>
