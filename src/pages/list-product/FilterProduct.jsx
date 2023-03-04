@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/20/solid";
 import MobileFilter from "./MobileFilter";
 import apiAdapter from "../../api/apiAdapter";
+import useUrlState from "@ahooksjs/use-url-state";
 
 const sortOptions = [
   { name: "Most Popular", href: "#", current: true },
@@ -22,38 +23,63 @@ function classNames(...classes) {
 }
 
 const FilterProduct = () => {
+  // memberikan state untuk mengaktifkan/non-aktifkan tampilan mobile
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  // menampung data brand yang diambil dari api
   const [brandData, setDataBrand] = useState([]);
-  const [filterData, setDataFilter] = useState({
-    brand: [],
-  });
+  // menangkap serta memberikan query url
+  const [filterState, setStateFilter] = useUrlState(
+    // menampung serta memberikan var query dengan nama brand yang bernilai array
+    { brand: [] },
+    {
+      // array brand tersebut akan menerima value dengan format array "comma"
+      parseOptions: {
+        arrayFormat: "comma",
+      },
+      // melakukan perubahan format menjadi "value,value,dst..."
+      stringifyOptions: {
+        arrayFormat: "comma",
+      },
+    }
+  );
 
   const getBrand = async () => {
     const res = await apiAdapter.get("/brand");
-    const data = await res.data.data;
-    console.log(data);
-    setDataBrand(data);
+    // memberikan key isCheck untuk nilai dari checkbox
+    const brandFilterData = res.data.data.map((v) => ({
+      ...v,
+      isCheck: false,
+    }));
+    // console.log([...filterState.brand]);
+    brandFilterData.map((a) =>
+      // menset nilai isCheck pada brandFilterData, jika idnya terdapat pada filterState
+      [...filterState.brand].includes(`${a.id}`)
+        ? (a.isCheck = true)
+        : (a.isCheck = false)
+    );
+    console.log(brandFilterData);
+    setDataBrand(brandFilterData);
   };
 
-  useEffect(() => {
-    getBrand();
-  }, []);
+  useEffect(
+    () => {
+      getBrand();
+    }, // jika terjadi perubahan pada filter brand
+    [filterState.brand]
+  );
 
   const handleChange = (e) => {
+    const { brand } = filterState;
     const { value, checked } = e.target;
-    const { brand } = filterData;
-    console.log(`${value} is ${checked}`);
+    const indx = [...brandData].findIndex((obj) => obj.id == value);
     if (checked) {
-      setDataFilter({
-        brand: [...brand, value],
-      });
+      [...brandData][indx].isCheck = true;
+      setStateFilter({ brand: [...brand, value] });
     } else {
-      setDataFilter({
-        brand: brand.filter((e) => e !== value),
-      });
+      [...brandData][indx].isCheck = false;
+      setStateFilter({ brand: [...brand].filter((e) => e !== value) });
     }
   };
-  console.log(filterData.brand);
   return (
     <div>
       <MobileFilter
@@ -163,6 +189,12 @@ const FilterProduct = () => {
                               defaultValue={brandoption.id}
                               type="checkbox"
                               onChange={handleChange}
+                              // {...([filterState.brand].includes(
+                              //   `${brandoption.id}`
+                              // )
+                              //   ? (lala = true)
+                              //   : (lala = false))}
+                              checked={brandoption.isCheck}
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
                             <label className="ml-3 text-sm text-gray-600">
@@ -231,14 +263,7 @@ const FilterProduct = () => {
             </form>
 
             {/* Product grid */}
-            <div className="lg:col-span-4">
-              {
-                <ListProduct
-                  filterData={filterData}
-                  setDataFilter={setDataFilter}
-                />
-              }
-            </div>
+            <div className="lg:col-span-4">{<ListProduct />}</div>
           </div>
         </section>
       </main>
