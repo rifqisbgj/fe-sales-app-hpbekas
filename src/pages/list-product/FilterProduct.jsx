@@ -10,6 +10,7 @@ import MobileFilter from "./MobileFilter";
 import apiAdapter from "../../api/apiAdapter";
 // get or add query to route
 import useUrlState from "@ahooksjs/use-url-state";
+import AlertFilterPrice from "../../components/alert/AlertFilterPrice";
 
 const sortOptions = [
   { name: "Most Popular", href: "#", current: true },
@@ -28,10 +29,12 @@ const FilterProduct = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   // menampung data brand yang diambil dari api
   const [brandData, setDataBrand] = useState([]);
+  // menyimpan pesan err
+  const [errPriceMsg, setMsg] = useState("");
   // menangkap serta memberikan query url
   const [filterState, setStateFilter] = useUrlState(
     // menampung serta memberikan var query dengan nama brand yang bernilai array
-    { brand: [] },
+    { brand: [], minPrice: null, maxPrice: null },
     {
       // array brand tersebut akan menerima value dengan format array "comma"
       parseOptions: {
@@ -60,13 +63,6 @@ const FilterProduct = () => {
     setDataBrand(brandFilterData);
   };
 
-  useEffect(
-    () => {
-      getBrand();
-    }, // jika terjadi perubahan pada filter brand
-    [filterState.brand]
-  );
-
   const handleChange = (e) => {
     // ambil value pada url query dengan var brand
     const { brand } = filterState;
@@ -81,6 +77,7 @@ const FilterProduct = () => {
       [...brandData][indx].isCheck = true;
       // masukan pada query route brand
       setStateFilter({ brand: [...brand, value] });
+      console.log();
     } else {
       // set status check ke false
       [...brandData][indx].isCheck = false;
@@ -88,14 +85,53 @@ const FilterProduct = () => {
       setStateFilter({ brand: [...brand].filter((e) => e !== value) });
     }
   };
+
+  const checkFilterPrice = () => {
+    const { minPrice, maxPrice } = filterState;
+    if (minPrice > maxPrice && maxPrice !== null) {
+      return setMsg("Harga maksimum harus lebih besar dari harga minimum.");
+    }
+    setMsg("");
+  };
+  const setMaxPrice = (e) => {
+    // jika value harga max tidak ada
+    if (!e) return setStateFilter({ maxPrice: undefined });
+    // jika value harga max ada
+    setStateFilter({ maxPrice: e });
+    console.log("max " + filterState.maxPrice);
+    checkFilterPrice();
+  };
+  const setMinPrice = (e) => {
+    // jika value harga min tidak ada
+    if (!e) return setStateFilter({ minPrice: undefined });
+    // jika value harga min ada
+    setStateFilter({ minPrice: e });
+    console.log("min " + filterState.minPrice);
+    checkFilterPrice();
+  };
+
+  useEffect(
+    () => {
+      getBrand();
+      // validasi filter harga
+      checkFilterPrice();
+    }, // jika terjadi perubahan pada filter brand
+    [filterState]
+  );
+
   return (
     <div>
       {/* Ambil UI filter untuk tampilan mobile dan passing state dataBrand serta state status mobileFilters */}
       <MobileFilter
+        handleChange={handleChange}
         brandData={brandData}
         mobileFiltersOpen={mobileFiltersOpen}
         setMobileFiltersOpen={setMobileFiltersOpen}
+        setMaxPrice={setMaxPrice}
+        setMinPrice={setMinPrice}
+        filterState={filterState}
       />
+
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between border-b border-gray-200 pt-24 pb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -241,8 +277,13 @@ const FilterProduct = () => {
                           </div>
                           <input
                             type="text"
-                            name="price"
-                            id="price"
+                            name="minPrice"
+                            id="minPrice"
+                            onKeyPress={(e) =>
+                              !/[0-9]/.test(e.key) && e.preventDefault()
+                            }
+                            defaultValue={filterState.minPrice}
+                            onBlur={(e) => setMinPrice(e.target.value)}
                             className="block w-full rounded-md border-gray-300 pl-10 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             placeholder="Harga Minimum"
                           />
@@ -255,8 +296,13 @@ const FilterProduct = () => {
                           </div>
                           <input
                             type="text"
-                            name="price"
-                            id="price"
+                            name="maxPrice"
+                            id="maxPrice"
+                            onKeyPress={(e) =>
+                              !/[0-9]/.test(e.key) && e.preventDefault()
+                            }
+                            defaultValue={filterState.maxPrice}
+                            onBlur={(e) => setMaxPrice(e.target.value)}
                             className="block w-full rounded-md border-gray-300 pl-10 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             placeholder="Harga Maximum"
                           />
@@ -269,7 +315,10 @@ const FilterProduct = () => {
             </form>
 
             {/* Product grid */}
-            <div className="lg:col-span-4">{<ListProduct />}</div>
+            <div className="lg:col-span-4">
+              <AlertFilterPrice errPriceMsg={errPriceMsg} />
+              {<ListProduct errPriceMsg={errPriceMsg} setMsg={setMsg} />}
+            </div>
           </div>
         </section>
       </main>

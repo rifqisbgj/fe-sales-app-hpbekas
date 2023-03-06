@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
@@ -7,10 +7,15 @@ const MobileFilter = ({
   brandData,
   mobileFiltersOpen,
   setMobileFiltersOpen,
+  handleChange,
+  setMaxPrice,
+  setMinPrice,
+  filterState,
 }) => {
   {
     /* Mobile filter dialog */
   }
+
   return (
     <Transition.Root show={mobileFiltersOpen} as={Fragment}>
       <Dialog
@@ -92,8 +97,10 @@ const MobileFilter = ({
                               <input
                                 id={`filter-${brandoption.id}-${optionIdx}`}
                                 name="brand[]"
-                                defaultValue={brandoption.namamerek}
+                                defaultValue={brandoption.id}
                                 type="checkbox"
+                                onChange={handleChange}
+                                checked={brandoption.isCheck}
                                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                               />
                               <label className="ml-3 text-sm text-gray-600">
@@ -143,6 +150,11 @@ const MobileFilter = ({
                               type="text"
                               name="price"
                               id="price"
+                              onKeyPress={(e) =>
+                                !/[0-9]/.test(e.key) && e.preventDefault()
+                              }
+                              defaultValue={filterState.minPrice}
+                              onBlur={(e) => setMinPrice(e.target.value)}
                               className="block w-full rounded-md border-gray-300 pl-10 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               placeholder="Harga Minimum"
                             />
@@ -157,6 +169,11 @@ const MobileFilter = ({
                               type="text"
                               name="price"
                               id="price"
+                              onKeyPress={(e) =>
+                                !/[0-9]/.test(e.key) && e.preventDefault()
+                              }
+                              defaultValue={filterState.maxPrice}
+                              onBlur={(e) => setMaxPrice(e.target.value)}
                               className="block w-full rounded-md border-gray-300 pl-10 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               placeholder="Harga Maximum"
                             />

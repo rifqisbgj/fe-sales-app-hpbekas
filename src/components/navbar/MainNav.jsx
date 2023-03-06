@@ -16,7 +16,7 @@ export default function MainNav() {
           <p class="invisible md:visible md:text-xl font-bold">BagjaCell</p>
         </div>
         {/* w-[400px] border border-gray-500 rounded flex items-center space-x-5 */}
-        <div className="relative w-[600px] mt-1 rounded-md shadow-sm">
+        <div className="relative w-[600px] mt-1 shadow-sm">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
             <MagnifyingGlassIcon class="h-5 w-5 text-gray-500" />
           </div>
@@ -24,7 +24,7 @@ export default function MainNav() {
             type="text"
             name="price"
             id="price"
-            className="block w-full h-8 rounded-md border-gray-300 pl-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="block w-full h-8 border-gray-300 rounded py-4 pl-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             placeholder="Cari di Bagja Cell"
           />
         </div>
