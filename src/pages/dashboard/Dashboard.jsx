@@ -1,19 +1,24 @@
-import jwtDecode from "jwt-decode";
-import { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GetUserByToken, Logout, reset } from "../../features/authSlice";
 import { useNavigate } from "react-router-dom";
+// start comp dashboard
+import CompDashboardAdminQC from "../../components/dashboard/CompDashboardAdminQC";
+import CompDashboardAdminSaler from "../../components/dashboard/CompDashboardAdminSaler";
+import CompDashboardSuper from "../../components/dashboard/CompDashboardSuper";
+// end comp dashboard
+// layout dashboard
+import LayoutDashboard from "../../components/layout/LayoutDashboard";
+import { GetUserByToken } from "../../features/authSlice";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [name, setName] = useState("");
-  const [token, setToken] = useState("");
   // ambil data isError untuk pengecekan status ambil data user, dan var user untuk data user login
   const { isError, user } = useSelector((state) => state.auth);
 
   // pengambilan data user pertama kali
   useEffect(() => {
+    // ambil data user
     dispatch(GetUserByToken());
   }, [dispatch]);
 
@@ -25,17 +30,18 @@ const Dashboard = () => {
     }
   }, [isError, navigate]);
 
-  // logout handler
-  const logout = () => {
-    // jika user ada, maka jalankan setelah && (berikan data email)
-    dispatch(Logout({ email: user && user.email }));
-    // reset user state
-    dispatch(reset());
-    // arahkan ke login
-    navigate("/login");
-  };
-
-  return <button onClick={logout}>{user && user.nama}</button>;
+  return (
+    <>
+      <LayoutDashboard>
+        {/* jika rolenya super admin */}
+        {user && user.role === "super" ? <CompDashboardSuper /> : ""}
+        {/* jika rolenya adminQC */}
+        {user && user.role === "adminQC" ? <CompDashboardAdminQC /> : ""}
+        {/* jika rolenya adminSale */}
+        {user && user.role === "adminSale" ? <CompDashboardAdminSaler /> : ""}
+      </LayoutDashboard>
+    </>
+  );
 };
 
 export default Dashboard;

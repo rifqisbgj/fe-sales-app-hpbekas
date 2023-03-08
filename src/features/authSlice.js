@@ -96,7 +96,6 @@ export const GetUserByToken = createAsyncThunk(
       const res = await apiAdapter.get("/users/token", {
         withCredentials: true,
       });
-      console.log(res.data);
       return jwtDecode(res.data.data.token);
     } catch (error) {
       if (error.response) {
