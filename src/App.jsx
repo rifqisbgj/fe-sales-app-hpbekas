@@ -1,17 +1,19 @@
-import { Route, Routes } from "react-router-dom";
-import MainNav from "./components/navbar/MainNav";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Login from "./pages/auth/Login";
 import Home from "./pages/home/Home";
-import FilterProduct from "./pages/list-product/FilterProduct";
+import Dashboard from "./pages/dashboard/Dashboard";
+import ListProduct from "./pages/list-product/ListProduct";
 export default function App() {
   return (
-    <div className="bg-gray-100">
-      <MainNav />
+    <BrowserRouter>
       <Routes>
         {/* Home page */}
         <Route index element={<Home />} />
         {/* Selling list product */}
-        <Route path="products" element={<FilterProduct />} />
+        <Route path="products" element={<ListProduct />} />
+        <Route path="login" element={<Login />} />
+        <Route path="dashboard" element={<Dashboard />} />
       </Routes>
-    </div>
+    </BrowserRouter>
   );
 }

@@ -10,7 +10,8 @@ import MobileFilter from "./MobileFilter";
 import apiAdapter from "../../api/apiAdapter";
 // get or add query to route
 import useUrlState from "@ahooksjs/use-url-state";
-import AlertFilterPrice from "../../components/alert/AlertFilterPrice";
+import AlertFilterPrice from "../alert/AlertFilterPrice";
+import MainNav from "../navbar/MainNav";
 
 const sortOptions = [
   { name: "Most Popular", href: "#", current: true },
@@ -131,7 +132,7 @@ const FilterProduct = () => {
         setMinPrice={setMinPrice}
         filterState={filterState}
       />
-
+      <MainNav />
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between border-b border-gray-200 pt-24 pb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -202,7 +203,7 @@ const FilterProduct = () => {
           {/* Desktop Page Filter */}
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
             {/* Filters */}
-            <form className="hidden lg:block bg-white h-fit px-3 rounded-lg">
+            <form className="hidden bg-white shadow-xl lg:block h-fit px-3 rounded-lg">
               {/* Filter by Brands */}
               <Disclosure as="div" defaultOpen className="border-b py-6">
                 {({ open }) => (
