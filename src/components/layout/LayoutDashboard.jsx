@@ -25,7 +25,7 @@ const LayoutDashboard = ({ children }) => {
   // logout handler
   const logout = () => {
     // jika user ada, maka jalankan setelah && (berikan data email)
-    dispatch(Logout({ email: user && user.email }));
+    dispatch(Logout({ email: user && user.data.email }));
     // reset user state
     dispatch(reset());
     // arahkan ke login
@@ -39,9 +39,9 @@ const LayoutDashboard = ({ children }) => {
         {/* navbar desktop */}
         <aside class="z-20 hidden pt-12 w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0">
           <div class="py-4 text-gray-500 dark:text-gray-400">
-            {user && user.role === "super" && <SideBarSuper />}
-            {user && user.role === "adminSale" && <SideBarSaler />}
-            {user && user.role === "adminQC" && <SideBarQC />}
+            {user && user.data.role === "super" && <SideBarSuper />}
+            {user && user.data.role === "adminSale" && <SideBarSaler />}
+            {user && user.data.role === "adminQC" && <SideBarQC />}
           </div>
         </aside>
         {/* content */}
@@ -113,7 +113,7 @@ const LayoutDashboard = ({ children }) => {
                         >
                           <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                             <span className="block px-4 py-2 font-bold text-sm text-gray-700 bg-gray-100">
-                              {user && user.nama}
+                              {user && user.data.nama}
                             </span>
                             <a
                               href="/dashboard/profile"
@@ -142,9 +142,11 @@ const LayoutDashboard = ({ children }) => {
 
                 <Disclosure.Panel className="sm:hidden">
                   <div className="space-y-1 px-2 pt-2 pb-3">
-                    {user && user.role === "super" && <SideBarMobSuper />}
-                    {user && user.role === "adminSale" && <SideBarMobSaler />}
-                    {user && user.role === "adminQC" && <SideBarMobQC />}
+                    {user && user.data.role === "super" && <SideBarMobSuper />}
+                    {user && user.data.role === "adminSale" && (
+                      <SideBarMobSaler />
+                    )}
+                    {user && user.data.role === "adminQC" && <SideBarMobQC />}
                   </div>
                 </Disclosure.Panel>
               </>

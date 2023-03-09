@@ -3,6 +3,7 @@ import Login from "./pages/auth/Login";
 import Home from "./pages/home/Home";
 import ListProduct from "./pages/list-product/ListProduct";
 import Dashboard from "./pages/dashboard/Dashboard";
+import DataUsers from "./pages/auth/manage-users/DataUsers";
 export default function App() {
   return (
     <BrowserRouter>
@@ -17,6 +18,7 @@ export default function App() {
 
         {/* Super Admin */}
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="dashboard/users" element={<DataUsers />} />
       </Routes>
     </BrowserRouter>
   );

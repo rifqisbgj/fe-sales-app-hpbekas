@@ -34,11 +34,15 @@ const Dashboard = () => {
     <>
       <LayoutDashboard>
         {/* jika rolenya super admin */}
-        {user && user.role === "super" ? <CompDashboardSuper /> : ""}
+        {user && user.data.role === "super" ? <CompDashboardSuper /> : ""}
         {/* jika rolenya adminQC */}
-        {user && user.role === "adminQC" ? <CompDashboardAdminQC /> : ""}
+        {user && user.data.role === "adminQC" ? <CompDashboardAdminQC /> : ""}
         {/* jika rolenya adminSale */}
-        {user && user.role === "adminSale" ? <CompDashboardAdminSale /> : ""}
+        {user && user.data.role === "adminSale" ? (
+          <CompDashboardAdminSale />
+        ) : (
+          ""
+        )}
       </LayoutDashboard>
     </>
   );

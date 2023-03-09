@@ -46,7 +46,7 @@ export const authSlice = createSlice({
     builder.addCase(GetUserByToken.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      state.user = action.payload.data;
+      state.user = action.payload;
     });
     // jika pengambilan data user gagal
     builder.addCase(GetUserByToken.rejected, (state, action) => {
@@ -96,6 +96,7 @@ export const GetUserByToken = createAsyncThunk(
       const res = await apiAdapter.get("/users/token", {
         withCredentials: true,
       });
+      console.log(jwtDecode(res.data.data.token));
       return jwtDecode(res.data.data.token);
     } catch (error) {
       if (error.response) {
