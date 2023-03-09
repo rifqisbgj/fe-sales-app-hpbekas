@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 // start comp dashboard
 import CompDashboardAdminQC from "../../components/dashboard/CompDashboardAdminQC";
-import CompDashboardAdminSaler from "../../components/dashboard/CompDashboardAdminSaler";
+import CompDashboardAdminSale from "../../components/dashboard/CompDashboardAdminSale";
 import CompDashboardSuper from "../../components/dashboard/CompDashboardSuper";
 // end comp dashboard
 // layout dashboard
@@ -38,7 +38,7 @@ const Dashboard = () => {
         {/* jika rolenya adminQC */}
         {user && user.role === "adminQC" ? <CompDashboardAdminQC /> : ""}
         {/* jika rolenya adminSale */}
-        {user && user.role === "adminSale" ? <CompDashboardAdminSaler /> : ""}
+        {user && user.role === "adminSale" ? <CompDashboardAdminSale /> : ""}
       </LayoutDashboard>
     </>
   );
