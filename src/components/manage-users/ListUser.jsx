@@ -1,33 +1,55 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 import ModalCreateUser from "./ModalCreateUser";
 import AlertSuccess from "../alert/AlertSuccess";
+import ModalDeleteUser from "./ModalDeleteUser";
 
 const ListUser = () => {
   const navigate = useNavigate();
+  // token access for header Authorization
   const [token, setToken] = useState("");
+  // token expire
   const [expire, setExpire] = useState("");
+  // account list
   const [dataUsers, setDataUsers] = useState([]);
+  // show or no create user modal
   const [showModal, setShowModal] = useState(false);
+  // show or no delete user modal
+  const [showDelete, setShowDelete] = useState(false);
+  // jika sukses tambah
   const [isSuccess, setSuccess] = useState(false);
+  // jika sukses delete
+  const [isScsDelete, setSczDelete] = useState(false);
 
-  useEffect(() => {
-    refreshToken();
-    getAdminUsers();
-  }, [showModal]);
+  // user email for delete/update
+  const [email, setEmail] = useState("");
 
+  useEffect(
+    () => {
+      // jalankan refresh token untuk mengambil token dan expired
+      refreshToken();
+      // mengambil data akun
+      getAdminUsers();
+    }, // data akan direfresh jika status success berubah
+    [isSuccess, isScsDelete]
+  );
+
+  // get fresh access token
   const refreshToken = async () => {
     try {
+      // ambil token user
       const response = await apiAdapter.get("/users/token", {
         withCredentials: true,
       });
+      // setToken
       setToken(response.data.data.token);
+      // decode dari token yang sudah diambil
       const decoded = jwtDecode(response.data.token);
+      // set expire token
       setExpire(decoded.exp);
     } catch (error) {
       if (error.response) {
@@ -36,14 +58,18 @@ const ListUser = () => {
     }
   };
 
+  // config before take a request
   privateApi.interceptors.request.use(
     async (config) => {
       const currentDate = new Date();
+      // jika token expired, maka ambil kembali token yang baru
       if (expire * 1000 < currentDate.getTime()) {
         const res = await apiAdapter.get("/users/token", {
           withCredentials: true,
         });
+        // set token yang baru
         setToken(res.data.data.token);
+        // masukkan pada headers Authorization
         config.headers.Authorization = res.data.data.token;
       }
       return config;
@@ -53,36 +79,75 @@ const ListUser = () => {
     }
   );
 
+  // get account from db
   const getAdminUsers = async () => {
+    // Ambil data user api yang sudah terconfig sebelumnya
     const res = await privateApi.get("/users", {
+      // proses pengambilan data dilakukan dengan pemberian headers Authorization
       headers: {
         Authorization: token,
       },
     });
+    // set data user
     setDataUsers(res.data.data);
+  };
+
+  // get account data for delete, and show modal
+  const dataDeleteUser = (email) => {
+    // reset status success delete
+    setSczDelete(false);
+    // set modal ke true
+    setShowDelete(true);
+    // set email dari user yang akan dihapus
+    setEmail(email);
+    // reset status sukses create
+    setSuccess(false);
+  };
+
+  // jika menambahkan data, tampilkan modal create
+  const createAccount = () => {
+    // reset status success
+    setSuccess(false);
+    // tampilkan modal create
+    setShowModal(true);
+    // reset status delete
+    setSczDelete(false);
   };
 
   return (
     <div class="container grid px-6 mx-auto">
+      {/* menampilkan modal create, jika bernilai true */}
+      {showModal && (
+        <ModalCreateUser
+          setShowModal={setShowModal}
+          setSuccess={setSuccess}
+          token={token}
+        />
+      )}
+      {/* menampilkan modal, jika modal delete true */}
+      {showDelete && (
+        <ModalDeleteUser
+          token={token}
+          email={email}
+          setEmai={setEmail}
+          setSczDelete={setSczDelete}
+          setShowDelete={setShowDelete}
+        />
+      )}
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
         Data Admin
       </h2>
       <div class="w-full overflow-hidden rounded-lg shadow-xs">
         <button
           class="px-4 py-2 mb-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-          onClick={() => setShowModal(true)}
+          onClick={() => createAccount()}
         >
           Tambah Admin
         </button>
-        {showModal && (
-          <ModalCreateUser
-            setShowModal={setShowModal}
-            setSuccess={setSuccess}
-            token={token}
-          />
-        )}
+        {/* Notif jika berhasil membuat atau menghapus data */}
         {isSuccess && <AlertSuccess msg="Akun admin berhasil ditambahkan" />}
-        <div class="w-full overflow-x-auto">
+        {isScsDelete && <AlertSuccess msg="Berhasil menghapus akun" />}
+        <div class="w-full overflow-x-auto rounded-md">
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
@@ -94,7 +159,7 @@ const ListUser = () => {
             </thead>
             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
               {dataUsers.map((user) => (
-                <tr class="text-gray-700 dark:text-gray-400">
+                <tr class="text-gray-700 dark:text-gray-400" key={user.emai}>
                   <td class="px-4 py-3">
                     <div class="flex items-center text-sm">
                       <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
@@ -142,6 +207,7 @@ const ListUser = () => {
                       <button
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Delete"
+                        onClick={() => dataDeleteUser(user.email)}
                       >
                         <svg
                           class="w-5 h-5"

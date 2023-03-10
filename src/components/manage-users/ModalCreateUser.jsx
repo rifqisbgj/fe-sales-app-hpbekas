@@ -1,21 +1,22 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import privateApi from "../../api/privateApi";
-import { GetUserByToken } from "../../features/authSlice";
+import AlertFailed from "../alert/AlertFailed";
 
 const ModalCreateUser = ({ setShowModal, token, setSuccess }) => {
-  const dispatch = useDispatch();
+  // set nama, email, role akun, dan password
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
+  // set validation msg
   const [validation, setValidation] = useState([]);
 
+  // mengambil data dari global state auth dengan variable user
   const { user } = useSelector((state) => state.auth);
 
-  const handleSubmit = async (e) => {
-    // console.log("here");
-    // e.preventDefault();
+  // handle post membuat akun admin
+  const handleSubmit = async () => {
     try {
       const res = await privateApi.post(
         "/users/store",
@@ -26,37 +27,21 @@ const ModalCreateUser = ({ setShowModal, token, setSuccess }) => {
           role: role,
           created_by: user.data.email,
         },
+        // headers untuk akses route membuat akun admin
         { headers: { Authorization: token } }
       );
-      console.log(user.data.email);
+      // modal ditutup
       setShowModal(false);
+      // dan status sukses dijadikan true
       setSuccess(true);
     } catch (error) {
       if (error.response) {
-        setValidation(error.response.data.message);
+        // jika terjadi error pada validasi maka tambahkan pesan error ke state validation
+        setValidation(error.response.data);
       }
     }
   };
 
-  privateApi.interceptors.request.use(
-    async (config) => {
-      const currentDate = new Date();
-      if (user.expire * 1000 < currentDate.getTime()) {
-        // const res = await apiAdapter.get("/users/token", {
-        //   withCredentials: true,
-        // });
-        dispatch(GetUserByToken());
-        setToken(res.data.data.token);
-        config.headers.Authorization = res.data.data.token;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
-
-  console.log(nama, email, role, password);
   return (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -78,7 +63,9 @@ const ModalCreateUser = ({ setShowModal, token, setSuccess }) => {
               </button>
             </div>
             {/*body*/}
+
             <div className="relative p-6 flex-auto">
+              {validation.length !== 0 && <AlertFailed msg={validation} />}
               <form action="" onSubmit={handleSubmit} className="w-96">
                 <label class="block text-sm">
                   <span class="text-gray-700 dark:text-gray-400">Nama</span>
