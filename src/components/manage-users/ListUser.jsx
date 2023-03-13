@@ -7,6 +7,7 @@ import privateApi from "../../api/privateApi";
 import ModalCreateUser from "./ModalCreateUser";
 import AlertSuccess from "../alert/AlertSuccess";
 import ModalDeleteUser from "./ModalDeleteUser";
+import { ModalUpdateUser } from "./ModalUpdateUser";
 
 const ListUser = () => {
   const navigate = useNavigate();
@@ -20,13 +21,19 @@ const ListUser = () => {
   const [showModal, setShowModal] = useState(false);
   // show or no delete user modal
   const [showDelete, setShowDelete] = useState(false);
+  // show or no update user modal
+  const [showUpdate, setShowUpdate] = useState(false);
   // jika sukses tambah
   const [isSuccess, setSuccess] = useState(false);
   // jika sukses delete
   const [isScsDelete, setSczDelete] = useState(false);
+  // jika sukses update
+  const [isUpdated, setUpdated] = useState(false);
 
   // user email for delete/update
   const [email, setEmail] = useState("");
+  // id user for update
+  const [idUserUpdate, setIdUser] = useState("");
 
   useEffect(
     () => {
@@ -35,7 +42,7 @@ const ListUser = () => {
       // mengambil data akun
       getAdminUsers();
     }, // data akan direfresh jika status success berubah
-    [isSuccess, isScsDelete]
+    [isSuccess, isScsDelete, isUpdated]
   );
 
   // get fresh access token
@@ -48,7 +55,7 @@ const ListUser = () => {
       // setToken
       setToken(response.data.data.token);
       // decode dari token yang sudah diambil
-      const decoded = jwtDecode(response.data.token);
+      const decoded = jwtDecode(response.data.data.token);
       // set expire token
       setExpire(decoded.exp);
     } catch (error) {
@@ -63,6 +70,7 @@ const ListUser = () => {
     async (config) => {
       const currentDate = new Date();
       // jika token expired, maka ambil kembali token yang baru
+
       if (expire * 1000 < currentDate.getTime()) {
         const res = await apiAdapter.get("/users/token", {
           withCredentials: true,
@@ -94,24 +102,33 @@ const ListUser = () => {
 
   // get account data for delete, and show modal
   const dataDeleteUser = (email) => {
-    // reset status success delete
-    setSczDelete(false);
     // set modal ke true
     setShowDelete(true);
     // set email dari user yang akan dihapus
     setEmail(email);
-    // reset status sukses create
-    setSuccess(false);
+    resetAction();
   };
 
   // jika menambahkan data, tampilkan modal create
   const createAccount = () => {
-    // reset status success
-    setSuccess(false);
     // tampilkan modal create
     setShowModal(true);
-    // reset status delete
+    resetAction();
+  };
+
+  const updateAccount = async (id) => {
+    setIdUser(id);
+    setShowUpdate(true);
+    resetAction();
+  };
+
+  const resetAction = () => {
+    // reset status sukses update
+    setUpdated(false);
+    // reset status sukses delete
     setSczDelete(false);
+    // reset status sukses create
+    setSuccess(false);
   };
 
   return (
@@ -129,9 +146,18 @@ const ListUser = () => {
         <ModalDeleteUser
           token={token}
           email={email}
-          setEmai={setEmail}
+          setEmail={setEmail}
           setSczDelete={setSczDelete}
           setShowDelete={setShowDelete}
+        />
+      )}
+
+      {showUpdate && (
+        <ModalUpdateUser
+          setShowUpdate={setShowUpdate}
+          id={idUserUpdate}
+          token={token}
+          setUpdated={setUpdated}
         />
       )}
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
@@ -147,6 +173,7 @@ const ListUser = () => {
         {/* Notif jika berhasil membuat atau menghapus data */}
         {isSuccess && <AlertSuccess msg="Akun admin berhasil ditambahkan" />}
         {isScsDelete && <AlertSuccess msg="Berhasil menghapus akun" />}
+        {isUpdated && <AlertSuccess msg="Berhasil memperbarui akun" />}
         <div class="w-full overflow-x-auto rounded-md">
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
@@ -159,7 +186,7 @@ const ListUser = () => {
             </thead>
             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
               {dataUsers.map((user) => (
-                <tr class="text-gray-700 dark:text-gray-400" key={user.emai}>
+                <tr class="text-gray-700 dark:text-gray-400" key={user.email}>
                   <td class="px-4 py-3">
                     <div class="flex items-center text-sm">
                       <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
@@ -194,6 +221,7 @@ const ListUser = () => {
                       <button
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Edit"
+                        onClick={() => updateAccount(user.id)}
                       >
                         <svg
                           class="w-5 h-5"

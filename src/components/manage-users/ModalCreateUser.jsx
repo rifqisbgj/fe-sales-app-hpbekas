@@ -36,8 +36,13 @@ const ModalCreateUser = ({ setShowModal, token, setSuccess }) => {
       setSuccess(true);
     } catch (error) {
       if (error.response) {
+        console.log(error.response.data.length);
         // jika terjadi error pada validasi maka tambahkan pesan error ke state validation
-        setValidation(error.response.data);
+        error.response.data.length === 1
+          ? // error jika terjadi conflict email
+            setValidation(error.response.data)
+          : // error jika terjadi kesalahan pengisian format input
+            setValidation(error.response.data.message);
       }
     }
   };
@@ -97,9 +102,7 @@ const ModalCreateUser = ({ setShowModal, token, setSuccess }) => {
                   />
                 </label>
                 <label class="block mt-3 text-sm">
-                  <span class="text-gray-700 dark:text-gray-400">
-                    Requested Limit
-                  </span>
+                  <span class="text-gray-700 dark:text-gray-400">Role</span>
                   <select
                     class="block w-full mt-1 rounded-md text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                     required

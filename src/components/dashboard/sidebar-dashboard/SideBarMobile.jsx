@@ -1,11 +1,11 @@
 import { Disclosure } from "@headlessui/react";
 import React from "react";
 const navigationSale = [
-  { name: "Dashboard", href: "/dashboard/admin-saler", current: false },
+  { name: "Dashboard", href: "/dashboard", current: false },
   { name: "Produk", href: "/dashboard/produk", current: false },
 ];
 const navigationQC = [
-  { name: "Dashboard", href: "/dashboard/admin-qc", current: false },
+  { name: "Dashboard", href: "/dashboard", current: false },
   { name: "Produk", href: "/dashboard/produk", current: false },
   {
     name: "Quality Control",
@@ -14,7 +14,7 @@ const navigationQC = [
   },
 ];
 const navigationSuper = [
-  { name: "Dashboard", href: "/dashboard/super", current: false },
+  { name: "Dashboard", href: "/dashboard", current: false },
   { name: "User", href: "/dashboard/users", current: false },
   { name: "Varian", href: "/dashboard/varian", current: false },
   { name: "Produk", href: "/dashboard/produk", current: false },
