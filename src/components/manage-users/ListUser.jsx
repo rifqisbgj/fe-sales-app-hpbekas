@@ -8,6 +8,7 @@ import ModalCreateUser from "./ModalCreateUser";
 import AlertSuccess from "../alert/AlertSuccess";
 import ModalDeleteUser from "./ModalDeleteUser";
 import { ModalUpdateUser } from "./ModalUpdateUser";
+import moment from "moment/moment";
 
 const ListUser = () => {
   const navigate = useNavigate();
@@ -106,6 +107,7 @@ const ListUser = () => {
     setShowDelete(true);
     // set email dari user yang akan dihapus
     setEmail(email);
+    // reset status aksi sebelumnya
     resetAction();
   };
 
@@ -116,12 +118,17 @@ const ListUser = () => {
     resetAction();
   };
 
+  // jika memperbarui data, maka tambahkan id yg dikirim button ke state
   const updateAccount = async (id) => {
+    // set id user yg akan diperbarui
     setIdUser(id);
+    // tampilkan modal
     setShowUpdate(true);
+    // reset status aksi sebelumnya
     resetAction();
   };
 
+  // mereset status aksi sebelumnya
   const resetAction = () => {
     // reset status sukses update
     setUpdated(false);
@@ -152,6 +159,7 @@ const ListUser = () => {
         />
       )}
 
+      {/* menampilkan modal update user */}
       {showUpdate && (
         <ModalUpdateUser
           setShowUpdate={setShowUpdate}
@@ -215,7 +223,10 @@ const ListUser = () => {
                       {user.role === "adminQC" ? "Admin QC" : ""}
                     </span>
                   </td>
-                  <td class="px-4 py-3 text-xs">20 Januari 2023</td>
+                  <td class="px-4 py-3 text-xs">
+                    {/* menampilkan tanggal gabung */}
+                    {moment(user.createdAt).format("LL")}
+                  </td>
                   <td class="px-4 py-3">
                     <div class="flex items-center space-x-4 text-sm">
                       <button

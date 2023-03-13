@@ -3,33 +3,37 @@ import privateApi from "../../api/privateApi";
 import AlertFailed from "../alert/AlertFailed";
 
 export const ModalUpdateUser = ({ setShowUpdate, token, id, setUpdated }) => {
+  // set nama, email, dan role akun yang akan diperbarui
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [isLoading, setLoading] = useState(true);
   //   set msg
   const [validation, setValidation] = useState([]);
 
   useEffect(() => {
+    // mengambil detail data user
     getDataAccount();
   }, []);
 
   const getDataAccount = async () => {
     try {
+      // ambil detail akun
       const res = await privateApi.get(`/users/${id}`, {
         headers: { Authorization: token },
       });
-      // setOldData(res.data.data);
+      // set nama, email, role pada form dengan detail data user
       setNama(res.data.data.nama);
       setEmail(res.data.data.email);
       setRole(res.data.data.role);
     } catch (error) {
+      // jika terjadi error pada saat pengambilan data
       error.response ? setValidation(error.response.data) : "";
     }
   };
 
   const updateData = async () => {
     try {
+      // update users dengan data dari state
       const res = await privateApi.put(
         `/users/edit/${id}`,
         {
@@ -39,7 +43,9 @@ export const ModalUpdateUser = ({ setShowUpdate, token, id, setUpdated }) => {
         },
         { headers: { Authorization: token } }
       );
+      // tutup modal
       setShowUpdate(false);
+      // set sukses update
       setUpdated(true);
     } catch (error) {
       if (error.response) {
@@ -75,6 +81,7 @@ export const ModalUpdateUser = ({ setShowUpdate, token, id, setUpdated }) => {
             {/*body*/}
 
             <div className="relative p-6 flex-auto">
+              {/* jika terjadi kesalahan pengisian atau email conflict */}
               {validation.length !== 0 && <AlertFailed msg={validation} />}
               <form action="" onSubmit={updateData} className="w-96">
                 <>
