@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import apiAdapter from "../../api/apiAdapter";
+import privateApi from "../../api/privateApi";
 
-const ChangeImages = ({ oldimage }) => {
+const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
   const [imageProduk, setImageProduk] = useState([]);
   const [imgPreview, setPreview] = useState([]);
-
-  useEffect(() => {});
+  //   store img id will update
+  const [idimg, setIdImg] = useState();
+  const [validation, setValidation] = useState();
 
   const loadimage = (e) => {
     const image = e.target.files;
@@ -22,14 +24,53 @@ const ChangeImages = ({ oldimage }) => {
     }
   };
 
-  const handleClick = (e) => {
+  //   handleClick with id image for active input file and set state idimg
+  const handleClick = (id) => {
+    // reset update img status
+    setUpdateImg(false);
+    // set id image and take for req body
+    setIdImg(id);
+    // trigger input file click (show window to select image)
     hiddenFileInput.current.click();
   };
 
+  //   get input file form
   const hiddenFileInput = useRef(null);
+
+  //   get file uploaded and store to database
   const handleFIle = (e) => {
+    // get file uploaded
     const fileUploaded = e.target.files[0];
-    console.log(fileUploaded);
+    // if file exist, upload to db
+    if (fileUploaded !== undefined) {
+      uploadImg(fileUploaded);
+    }
+  };
+
+  //   upload update image to db
+  const uploadImg = async (imgUpdate) => {
+    try {
+      await privateApi.put(
+        "/product-image/update",
+        {
+          idImgProduct: idimg,
+          productImage: imgUpdate,
+        },
+        {
+          // headers for input file and access token
+          headers: {
+            "Content-type": "multipart/form-data",
+            Authorization: token,
+          },
+        }
+      );
+      //   trigger refetch data image product, set to true/different value
+      setUpdateImg(true);
+    } catch (error) {
+      if (error.response) {
+        console.log(error.response);
+      }
+    }
   };
   return (
     <div class="-mx-3 px-3 flex-col mt-4 md:flex mb-2">
@@ -70,7 +111,7 @@ const ChangeImages = ({ oldimage }) => {
                     </button>
                     <button
                       className="rounded-full ml-1 p-1 hover:bg-blue-600 bg-gray-400 border"
-                      onClick={handleClick}
+                      onClick={() => handleClick(imgproduk.id)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

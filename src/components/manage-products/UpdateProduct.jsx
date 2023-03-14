@@ -27,9 +27,13 @@ const UpdateProduct = () => {
   const [brand, setBrand] = useState([]);
   const [allVarian, setAllVarian] = useState([]);
 
+  // status update
+  const [isUpdateImg, setUpdateImg] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isError, user } = useSelector((state) => state.auth);
+  // get slug from params
   const { slug } = useParams();
 
   // pengambilan data user pertama kali
@@ -51,7 +55,7 @@ const UpdateProduct = () => {
     getBrand();
     // get token for update
     refreshToken();
-  }, [isError, navigate]);
+  }, [isError, navigate, isUpdateImg]);
 
   // get fresh access token
   const refreshToken = async () => {
@@ -365,7 +369,12 @@ const UpdateProduct = () => {
           </div>
         </div>
         <div class="bg-gray-800 shadow-md text-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-          <ChangeImages oldimage={oldimage} />
+          {/* call comp ChangeImages with image product data, token, and set status update img */}
+          <ChangeImages
+            oldimage={oldimage}
+            token={token}
+            setUpdateImg={setUpdateImg}
+          />
         </div>
       </div>
     </LayoutDashboard>
