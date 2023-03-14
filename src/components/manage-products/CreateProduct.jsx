@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 import { GetUserByToken } from "../../features/authSlice";
+import AlertFailed from "../alert/AlertFailed";
 import LayoutDashboard from "../layout/LayoutDashboard";
 
 const CreateProduct = () => {
@@ -15,10 +16,11 @@ const CreateProduct = () => {
   const [deskripsi, setDeskripsi] = useState();
   const [ram, setRAM] = useState();
   const [storage, setStorage] = useState();
-  const [imageProduk, setImageProduk] = useState([]);
-  const [imgPreview, setPreview] = useState([]);
+  // token for post product
+  const [token, setToken] = useState();
+  const [validation, setValidation] = useState([]);
+
   //   get all brand
-  const [idBrand, setIdBrand] = useState();
   const [brand, setBrand] = useState([]);
   const [allVarian, setAllVarian] = useState([]);
 
@@ -43,7 +45,24 @@ const CreateProduct = () => {
     }
 
     getBrand();
+    refreshToken();
   }, [isError, allVarian, navigate]);
+
+  // get fresh access token
+  const refreshToken = async () => {
+    try {
+      // ambil token user
+      const response = await apiAdapter.get("/users/token", {
+        withCredentials: true,
+      });
+      // setToken
+      setToken(response.data.data.token);
+    } catch (error) {
+      if (error.response) {
+        navigate("/");
+      }
+    }
+  };
 
   // get brand data
   const getBrand = async () => {
@@ -57,264 +76,284 @@ const CreateProduct = () => {
     setAllVarian(res.data.data);
   };
 
-  const loadimage = (e) => {
-    // get all image files
-    const image = e.target.files;
-    console.log(image);
-    // set image produk
-    setImageProduk(image);
-
-    // set preview image by file length and store blob
-    for (let i = 0; i < image.length; i++) {
-      // store blob to preview image
-      setPreview((imgPreview) => [
-        ...imgPreview,
-        URL.createObjectURL(image[i]),
-      ]);
+  // create new product
+  const handleSubmit = async () => {
+    try {
+      const res = await privateApi.post(
+        "/product/store",
+        {
+          imei: imei,
+          harga: harga === "" && "0",
+          deskrispi: deskripsi,
+          warna: warna,
+          storage: storage,
+          ram: ram,
+          varian: varian,
+        },
+        { headers: { Authorization: token } }
+      );
+      navigate("/dashboard/produk");
+    } catch (error) {
+      if (error.response) {
+        error.response.data.length === 1
+          ? // error jika terjadi error diluar dari kesalahan input
+            setValidation(error.response.data)
+          : // error jika terjadi kesalahan pengisian format input
+            setValidation(error.response.data.message);
+      }
     }
   };
-
-  // debug input
-  console.log(
-    imei +
-      "-" +
-      harga +
-      "-" +
-      deskripsi +
-      "-" +
-      warna +
-      "-" +
-      storage +
-      "-" +
-      ram +
-      "-" +
-      varian
-  );
 
   return (
     <LayoutDashboard>
       <div className="container grid px-6 mx-auto">
-        <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+        <nav class="flex my-6" aria-label="Breadcrumb">
+          <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+              <a
+                href="/dashboard"
+                class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                </svg>
+                Home
+              </a>
+            </li>
+            <li>
+              <div class="flex items-center">
+                <svg
+                  aria-hidden="true"
+                  class="w-6 h-6 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <a
+                  href="/dashboard/produk"
+                  class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
+                >
+                  Produk
+                </a>
+              </div>
+            </li>
+            <li aria-current="page">
+              <div class="flex items-center">
+                <svg
+                  aria-hidden="true"
+                  class="w-6 h-6 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">
+                  Tambah Produk
+                </span>
+              </div>
+            </li>
+          </ol>
+        </nav>
+        <h2 class="my-3 text-2xl font-semibold text-gray-700 dark:text-gray-200">
           Tambah Produk
         </h2>
-        <div class="bg-gray-800 shadow-md text-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-          <div class="-mx-3 md:flex mb-6">
-            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-first-name"
-              >
-                IMEI
-              </label>
-              <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                placeholder="Phone IMEI"
-                // max input 15 digit
-                maxLength={15}
-                type="text"
-                // accept number only input
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-                onChange={(e) => setImei(e.target.value)}
-              />
-            </div>
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-last-name"
-              >
-                Harga
-              </label>
-              <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                placeholder="Harga Handphone"
-                type="text"
-                // accept number only input
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-                onChange={(e) => setHarga(e.target.value)}
-              />
-            </div>
-          </div>
-          <div class="-mx-3 md:flex mb-6">
-            <div class="md:w-full px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-password"
-              >
-                Deskripsi
-              </label>
-              <textarea
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                id="grid-password"
-                onChange={(e) => setDeskripsi(e.target.value)}
-              ></textarea>
-            </div>
-          </div>
-          <div class="-mx-3 md:flex mb-2">
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-last-name"
-              >
-                Warna
-              </label>
-              <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                placeholder="Warna Handphone"
-                onChange={(e) => setWarna(e.target.value)}
-              />
-            </div>
-            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-city"
-              >
-                Storage
-              </label>
-              <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                placeholder="Storage Handphone"
-                type="text"
-                onChange={(e) => setStorage(e.target.value)}
-                // accept number only input
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </div>
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-zip"
-              >
-                RAM
-              </label>
-              <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                placeholder="RAM Handphone"
-                type="text"
-                onChange={(e) => setRAM(e.target.value)}
-                // accept number only input
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </div>
-          </div>
-          <div class="-mx-3 mt-4 md:flex mb-2">
-            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-city"
-              >
-                Merek
-              </label>
-              <select
-                class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                // selected brand will passing id brand to getVarian
-                onChange={(e) => getVarian(e.target.value)}
-              >
-                <option>Pilih Merek</option>
-                {brand.map((br, indx) => (
-                  <option key={indx} value={br.id}>
-                    {br.namamerek}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-zip"
-              >
-                Varian
-              </label>
-              <select
-                class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                //  set varian produk
-                onChange={(e) => setVarian(e.target.value)}
-              >
-                <option>Pilih Varian</option>
-                {allVarian.length ? (
-                  allVarian.map((v, indx) => (
-                    <option value={v.id} key={indx}>
-                      {v.namavarian}
-                    </option>
-                  ))
-                ) : (
-                  // loading data varian, waiting brand
-                  <option>Tidak tersedia...</option>
-                )}
-              </select>
-            </div>
-          </div>
 
-          <div class="-mx-3 px-3 flex-col mt-4 md:flex mb-2">
-            <label
-              class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-              for="grid-city"
-            >
-              Gambar Produk
-            </label>
-            <div class="flex items-center justify-center w-full">
-              <label
-                for="dropzone-file"
-                class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-              >
-                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg
-                    aria-hidden="true"
-                    class="w-10 h-10 mb-3 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    ></path>
-                  </svg>
-                  <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span class="font-semibold">Click to upload</span>
-                  </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                    PNG, JPG, or JPEG (MAX. 3 MB)
-                  </p>
-                </div>
+        <form action={handleSubmit}>
+          <div class="bg-gray-800 shadow-md text-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+            {validation.length !== 0 && <AlertFailed msg={validation} />}
+            <div class="-mx-3 md:flex mb-6">
+              <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+                <label
+                  class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                  for="grid-first-name"
+                >
+                  IMEI
+                </label>
                 <input
-                  id="dropzone-file"
-                  type="file"
-                  onChange={loadimage}
-                  accept=".png,.jpg,.jpeg"
-                  class="hidden"
-                  multiple
+                  class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                  placeholder="Phone IMEI"
+                  // max input 15 digit
+                  maxLength={15}
+                  type="text"
+                  // accept number only input
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => setImei(e.target.value)}
                 />
-              </label>
+              </div>
+              <div class="md:w-1/2 px-3">
+                <label
+                  class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                  for="grid-last-name"
+                >
+                  Harga
+                </label>
+                <input
+                  class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                  placeholder="Harga Handphone"
+                  type="text"
+                  // accept number only input
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => setHarga(e.target.value)}
+                />
+              </div>
+            </div>
+            <div class="-mx-3 md:flex mb-6">
+              <div class="md:w-full px-3">
+                <label
+                  class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                  for="grid-password"
+                >
+                  Deskripsi
+                </label>
+                <textarea
+                  class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                  id="grid-password"
+                  onChange={(e) => setDeskripsi(e.target.value)}
+                ></textarea>
+              </div>
+            </div>
+            <div class="-mx-3 md:flex mb-2">
+              <div class="md:w-1/2 px-3">
+                <label
+                  class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                  for="grid-last-name"
+                >
+                  Warna
+                </label>
+                <input
+                  class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                  placeholder="Warna Handphone"
+                  onChange={(e) => setWarna(e.target.value)}
+                />
+              </div>
+              <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+                <label
+                  class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                  for="grid-city"
+                >
+                  Storage
+                </label>
+                <input
+                  class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                  placeholder="Storage Handphone"
+                  type="text"
+                  onChange={(e) => setStorage(e.target.value)}
+                  // accept number only input
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
+              </div>
+              <div class="md:w-1/2 px-3">
+                <label
+                  class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                  for="grid-zip"
+                >
+                  RAM
+                </label>
+                <input
+                  class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                  placeholder="RAM Handphone"
+                  type="text"
+                  onChange={(e) => setRAM(e.target.value)}
+                  // accept number only input
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <div class="-mx-3 mt-4 md:flex mb-2">
+              <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+                <label
+                  class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                  for="grid-city"
+                >
+                  Merek
+                </label>
+                <select
+                  class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                  // selected brand will passing id brand to getVarian
+                  onChange={(e) => getVarian(e.target.value)}
+                >
+                  <option>Pilih Merek</option>
+                  {brand.map((br, indx) => (
+                    <option key={indx} value={br.id}>
+                      {br.namamerek}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div class="md:w-1/2 px-3">
+                <label
+                  class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                  for="grid-zip"
+                >
+                  Varian
+                </label>
+                <select
+                  class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                  //  set varian produk
+                  onChange={(e) => setVarian(e.target.value)}
+                  defaultChecked={true}
+                >
+                  {allVarian.length ? (
+                    <option value="">Pilih Varian</option>
+                  ) : (
+                    ""
+                  )}
+                  {allVarian.length
+                    ? allVarian.map((v, indx) => (
+                        <option value={v.id} key={indx}>
+                          {v.namavarian}
+                        </option>
+                      ))
+                    : // loading data varian, waiting brand
+                      ""}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-2">
+              <button
+                className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-5 py-3 rounded-md shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                type="button"
+                onClick={() => handleSubmit()}
+              >
+                Submit
+              </button>
             </div>
           </div>
-          {/* {console.log(imgPreview)} */}
-          {imgPreview
-            ? imgPreview.map((prv) => (
-                <figure className="w-1/2 h-1/2">
-                  <img src={prv} alt="Preview Image" />
-                </figure>
-              ))
-            : ""}
-        </div>
+        </form>
       </div>
     </LayoutDashboard>
   );
