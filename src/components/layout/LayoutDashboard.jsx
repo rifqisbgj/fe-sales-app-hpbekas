@@ -35,17 +35,17 @@ const LayoutDashboard = ({ children }) => {
   return (
     <div>
       {/* Layout */}
-      <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
         {/* navbar desktop */}
-        <aside class="z-20 hidden pt-12 w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0">
-          <div class="py-4 text-gray-500 dark:text-gray-400">
+        <aside className="z-20 hidden pt-12 w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0">
+          <div className="py-4 text-gray-500 dark:text-gray-400">
             {user && user.data.role === "super" && <SideBarSuper />}
             {user && user.data.role === "adminSale" && <SideBarSaler />}
             {user && user.data.role === "adminQC" && <SideBarQC />}
           </div>
         </aside>
         {/* content */}
-        <div class="flex flex-col flex-1">
+        <div className="flex flex-col flex-1">
           {/* Mobile Navbar */}
           <Disclosure
             as="nav"
@@ -75,7 +75,7 @@ const LayoutDashboard = ({ children }) => {
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                       <div className="flex flex-shrink-0 items-center">
                         <a
-                          class="text-lg font-bold text-gray-800 dark:text-gray-200"
+                          className="text-lg font-bold text-gray-800 dark:text-gray-200"
                           href="#"
                         >
                           BagjaGadget
@@ -152,7 +152,7 @@ const LayoutDashboard = ({ children }) => {
               </>
             )}
           </Disclosure>
-          <main class="h-full pb-16 overflow-y-auto">{children}</main>
+          <main className="h-full pb-16 overflow-y-auto">{children}</main>
         </div>
       </div>
     </div>
