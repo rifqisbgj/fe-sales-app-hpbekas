@@ -1,29 +1,90 @@
-import React, { useEffect, useRef, useState } from "react";
-import apiAdapter from "../../api/apiAdapter";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import privateApi from "../../api/privateApi";
+import AlertFailed from "../alert/AlertFailed";
+import AlertSuccess from "../alert/AlertSuccess";
 
-const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
+const ChangeImages = ({
+  oldimage,
+  token,
+  setUpdateImg,
+  isUpdateImg,
+  setCreateImg,
+  isCreateImg,
+  idproduk,
+  setDeleteImg,
+  isDeleteImg,
+}) => {
+  // store file before upload (create new image)
   const [imageProduk, setImageProduk] = useState([]);
+  // store image preview
   const [imgPreview, setPreview] = useState([]);
   //   store img id will update
   const [idimg, setIdImg] = useState();
+  // validation message
   const [validation, setValidation] = useState();
 
+  // navigate if delete doesn't have access
+  const navigate = useNavigate();
+
+  // START CREATE IMAGE PRODUCT
+  // load preview image and store new image to state
   const loadimage = (e) => {
+    resetStatus();
     const image = e.target.files;
-    // set image produk
-    setImageProduk(image);
+    // set image produk with image Object to state imageProduk
+    setImageProduk([...imageProduk, ...Object.values(image)]);
 
     // set preview image by file length and store blob
     for (let i = 0; i < image.length; i++) {
-      // store blob to preview image
+      // store blob and file to preview image
       setPreview((imgPreview) => [
         ...imgPreview,
-        URL.createObjectURL(image[i]),
+        { file: image[i], preview: URL.createObjectURL(image[i]) },
       ]);
     }
   };
+  // delete preview image
+  const deletePreview = (src) => {
+    // delete image produk for create new image product
+    setImageProduk([...imageProduk.filter((e) => e !== src)]);
+    // delete preview image by src file
+    setPreview([...imgPreview.filter((e) => e.file !== src)]);
+    // delete validation after delete one preview
+    setValidation([]);
+  };
+  // store new image product to db
+  const handleNewImage = async () => {
+    const formData = new FormData();
+    // get one by one image file and store to productImage body
+    imageProduk.forEach((file) => {
+      formData.append("productImage", file);
+    });
+    // store data idproduk to idProduk body
+    formData.append("idProduk", idproduk);
+    try {
+      await privateApi.post("/product-image/store", formData, {
+        headers: {
+          "Content-type": "multipart/form-data",
+          Authorization: token,
+        },
+      });
+      // trigger reload new image in update product
+      setCreateImg(true);
+      // delete preview
+      setPreview([]);
+      // delete image produk after uploaded
+      setImageProduk([]);
+    } catch (error) {
+      if (error.response) {
+        // set validation message
+        setValidation(error.response.data);
+      }
+    }
+  };
+  // END CREATE IMAGE PRODUCT
 
+  // START UPDATE IMAGE PRODUCT
   //   handleClick with id image for active input file and set state idimg
   const handleClick = (id) => {
     // reset update img status
@@ -33,10 +94,8 @@ const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
     // trigger input file click (show window to select image)
     hiddenFileInput.current.click();
   };
-
   //   get input file form
   const hiddenFileInput = useRef(null);
-
   //   get file uploaded and store to database
   const handleFIle = (e) => {
     // get file uploaded
@@ -46,7 +105,6 @@ const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
       uploadImg(fileUploaded);
     }
   };
-
   //   upload update image to db
   const uploadImg = async (imgUpdate) => {
     try {
@@ -68,10 +126,40 @@ const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
       setUpdateImg(true);
     } catch (error) {
       if (error.response) {
-        console.log(error.response);
+        // set validation message
+        setValidation(error.response.data);
       }
     }
   };
+  // END UPDATE IMAGE PRODUCT
+
+  // delete image product
+  const deleteImg = async (idimg) => {
+    resetStatus();
+    try {
+      await privateApi.delete("/product-image/delete", {
+        // data gambar yang akan dihapus
+        data: {
+          idImgProduct: idimg,
+        },
+        // headers Authorization untuk akses route delete img
+        headers: {
+          Authorization: token,
+        },
+      });
+      setDeleteImg(true);
+    } catch (error) {
+      navigate("/");
+    }
+  };
+
+  // reset action status
+  const resetStatus = () => {
+    setCreateImg(false);
+    setUpdateImg(false);
+    setDeleteImg(false);
+  };
+
   return (
     <div class="-mx-3 px-3 flex-col mt-4 md:flex mb-2">
       <label
@@ -80,6 +168,13 @@ const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
       >
         Gambar Produk Saat Ini
       </label>
+      {/* ALERT SUCCESS AND FAIL */}
+      {isUpdateImg && <AlertSuccess msg="Gambar berhasil diperbarui" />}
+      {isDeleteImg && <AlertSuccess msg="Gambar berhasil dihapus" />}
+      {isCreateImg && <AlertSuccess msg="Gambar berhasil ditambahkan" />}
+      {validation && validation.length ? <AlertFailed msg={validation} /> : ""}
+      {/* END ALERT */}
+      {/* Gambar Produk Terkini */}
       <div class="grid grid-cols-2 gap-x-6 gap-y-5 px-1 mt-2 mb-3 lg:grid-cols-5 lg:gap-x-4">
         {oldimage
           ? oldimage.map((imgproduk) => (
@@ -92,7 +187,7 @@ const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
                   <div>
                     <button
                       className="rounded-full p-1 hover:bg-red-600 bg-gray-400 border"
-                      onClick={() => console.log("tes")}
+                      onClick={() => deleteImg(imgproduk.id)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -134,6 +229,7 @@ const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
             ))
           : "Gambar belum tersedia"}
       </div>
+      {/* Akhir Gambar Produk Terkini */}
       <label
         class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
         for="grid-city"
@@ -174,6 +270,10 @@ const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
             onChange={loadimage}
             accept=".png,.jpg,.jpeg"
             class="hidden"
+            multiple
+            onClick={(event) => {
+              event.target.value = null;
+            }}
           />
         </label>
       </div>
@@ -183,38 +283,61 @@ const ChangeImages = ({ oldimage, token, setUpdateImg }) => {
       >
         Preview Image Produk
       </label>
+      {/* Image Preview */}
       <div class="grid grid-cols-2 gap-x-6 gap-y-5 px-1 mt-2 lg:grid-cols-5 lg:gap-x-4">
-        <figure class="relative max-w-xs">
-          <img
-            class="rounded-lg shadow-xl hover:shadow-2xl h-44 w-full object-cover"
-            src="https://s.yimg.com/uu/api/res/1.2/6TUuNlPHf9ibJy5LhUXjyg--~B/aD0xMzc1O3c9MjQwMDthcHBpZD15dGFjaHlvbg--/https://media-mbst-pub-ue1.s3.amazonaws.com/creatr-uploaded-images/2021-04/334d9090-a9b8-11eb-bf73-58819afb70c7.cf.jpg"
-          />
-          <figcaption class="absolute text-lg -mt-10 text-white px-4">
-            <div>
-              <button
-                className="rounded-full p-1 hover:bg-red-600 bg-gray-400 border"
-                onClick={() => console.log("Tes")}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5 hover:text-white"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                  />
-                </svg>
-              </button>
-            </div>
-          </figcaption>
-        </figure>
+        {console.log(imageProduk)}
+        {console.log(imgPreview)}
+        {imgPreview
+          ? imgPreview.map((imgprvw) => (
+              <figure class="relative max-w-xs">
+                <img
+                  class="rounded-lg shadow-xl hover:shadow-2xl h-44 w-full object-cover"
+                  src={imgprvw.preview}
+                />
+                <figcaption class="absolute text-lg -mt-10 text-white px-4">
+                  <div>
+                    <button
+                      className="rounded-full p-1 hover:bg-red-600 bg-gray-400 border"
+                      onClick={() => deletePreview(imgprvw.file)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5 hover:text-white"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </figcaption>
+              </figure>
+            ))
+          : ""}
       </div>
+      {/* End Image Preview */}
 
+      {imgPreview.length ? (
+        <div className="flex justify-center mt-2">
+          <button
+            className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-5 py-3 rounded-md shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+            type="button"
+            onClick={() => handleNewImage()}
+          >
+            Submit
+          </button>
+        </div>
+      ) : (
+        ""
+      )}
+
+      {/* Input file for update image product */}
       <input
         type="file"
         ref={hiddenFileInput}

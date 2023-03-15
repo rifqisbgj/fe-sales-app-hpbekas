@@ -19,6 +19,7 @@ const UpdateProduct = () => {
   const [storage, setStorage] = useState();
   const [statusproduk, setStatusProduk] = useState();
   const [oldimage, setOldImage] = useState([]);
+  const [idproduk, setIdProduk] = useState();
   // token for update product
   const [token, setToken] = useState();
   const [validation, setValidation] = useState([]);
@@ -27,8 +28,10 @@ const UpdateProduct = () => {
   const [brand, setBrand] = useState([]);
   const [allVarian, setAllVarian] = useState([]);
 
-  // status update
+  // status update, create,delete
   const [isUpdateImg, setUpdateImg] = useState(false);
+  const [isCreateImg, setCreateImg] = useState(false);
+  const [isDeleteImg, setDeleteImg] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,7 +58,7 @@ const UpdateProduct = () => {
     getBrand();
     // get token for update
     refreshToken();
-  }, [isError, navigate, isUpdateImg]);
+  }, [isError, navigate, isUpdateImg, isCreateImg, isDeleteImg]);
 
   // get fresh access token
   const refreshToken = async () => {
@@ -81,6 +84,7 @@ const UpdateProduct = () => {
     // set idBrand for condition input select brand
     setIdBrand(data.varianProduk.id_merk);
     // set detail product
+    setIdProduk(data.id);
     setOldImage(data.gambarProduk);
     setVarian(data.id_varian);
     setStatusProduk(data.statusproduk);
@@ -287,13 +291,13 @@ const UpdateProduct = () => {
               <select
                 class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 onChange={(e) => getVarian(e.target.value)}
+                value={idBrand}
               >
                 <option>Pilih Merek</option>
                 {brand.map((br, indx) => (
                   <option
                     key={indx}
                     value={br.id}
-                    selected={br.id === idBrand}
                     // onChange={() => getVarian(br.id)}
                   >
                     {br.namamerek}
@@ -311,15 +315,12 @@ const UpdateProduct = () => {
               <select
                 class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 onChange={(e) => setVarian(e.target.value)}
+                value={varian}
               >
                 {allVarian.length ? <option value="">Pilih Varian</option> : ""}
                 {allVarian.length
                   ? allVarian.map((v, indx) => (
-                      <option
-                        value={v.id}
-                        key={indx}
-                        selected={v.id === varian}
-                      >
+                      <option value={v.id} key={indx}>
                         {v.namavarian}
                       </option>
                     ))
@@ -336,25 +337,14 @@ const UpdateProduct = () => {
               <select
                 class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 onChange={(e) => setStatusProduk(e.target.value)}
+                value={statusproduk}
               >
-                <option value="BQC" selected={statusproduk === "BQC"}>
-                  Belum Quality Control
-                </option>
-                <option value="PQC" selected={statusproduk === "PQC"}>
-                  Proses Quality Control
-                </option>
-                <option value="SQC" selected={statusproduk === "SQC"}>
-                  Selesai Quality Control
-                </option>
-                <option value="SJ" selected={statusproduk === "SJ"}>
-                  Siap Jual
-                </option>
-                <option value="D" selected={statusproduk === "D"}>
-                  Denied
-                </option>
-                <option value="T" selected={statusproduk === "T"}>
-                  Terjual
-                </option>
+                <option value="BQC">Belum Quality Control</option>
+                <option value="PQC">Proses Quality Control</option>
+                <option value="SQC">Selesai Quality Control</option>
+                <option value="SJ">Siap Jual</option>
+                <option value="D">Denied</option>
+                <option value="T">Terjual</option>
               </select>
             </div>
           </div>
@@ -374,6 +364,12 @@ const UpdateProduct = () => {
             oldimage={oldimage}
             token={token}
             setUpdateImg={setUpdateImg}
+            isUpdateImg={isUpdateImg}
+            idproduk={idproduk}
+            isCreateImg={isCreateImg}
+            setCreateImg={setCreateImg}
+            setDeleteImg={setDeleteImg}
+            isDeleteImg={isDeleteImg}
           />
         </div>
       </div>
