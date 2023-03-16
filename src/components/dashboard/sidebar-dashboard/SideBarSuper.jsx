@@ -1,14 +1,18 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export const SideBarSuper = () => {
   return (
     <div>
       <ul>
         <li class="relative px-6 py-3">
-          <Link
-            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-            to={"/dashboard"}
+          <NavLink
+            className={(navData) =>
+              navData.isActive
+                ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            }
+            to={"/dashboard/"}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -26,11 +30,15 @@ export const SideBarSuper = () => {
             </svg>
 
             <span class="ml-4">Dashboard</span>
-          </Link>
+          </NavLink>
         </li>
         <li class="relative px-6 py-3">
-          <Link
-            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+          <NavLink
+            className={(navData) =>
+              navData.isActive
+                ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            }
             to={"/dashboard/users"}
           >
             <svg
@@ -49,11 +57,15 @@ export const SideBarSuper = () => {
             </svg>
 
             <span class="ml-4">User</span>
-          </Link>
+          </NavLink>
         </li>
         <li class="relative px-6 py-3">
-          <Link
-            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+          <NavLink
+            className={(navData) =>
+              navData.isActive
+                ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            }
             to={"/dashboard/produk"}
           >
             <svg
@@ -72,12 +84,16 @@ export const SideBarSuper = () => {
             </svg>
 
             <span class="ml-4">Produk</span>
-          </Link>
+          </NavLink>
         </li>
         <li class="relative px-6 py-3">
-          <a
-            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-            href="../charts.html"
+          <NavLink
+            className={(navData) =>
+              navData.isActive
+                ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            }
+            to={"/dashboard/varian"}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -100,12 +116,16 @@ export const SideBarSuper = () => {
             </svg>
 
             <span class="ml-4">Varian</span>
-          </a>
+          </NavLink>
         </li>
         <li class="relative px-6 py-3">
-          <a
-            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-            href="../charts.html"
+          <NavLink
+            className={(navData) =>
+              navData.isActive
+                ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            }
+            to={"/dashboard/quality-control"}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +143,34 @@ export const SideBarSuper = () => {
             </svg>
 
             <span class="ml-4">Quality Control</span>
-          </a>
+          </NavLink>
+        </li>
+        <li class="relative px-6 py-3">
+          <NavLink
+            className={(navData) =>
+              navData.isActive
+                ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            }
+            to={"/dashboard/transaksi"}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+
+            <span class="ml-4">Transaksi</span>
+          </NavLink>
         </li>
       </ul>
     </div>

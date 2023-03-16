@@ -12,12 +12,8 @@ const ListProduct = () => {
   const [token, setToken] = useState("");
   // token expire
   const [expire, setExpire] = useState("");
-  // jika sukses tambah
-  const [isSuccess, setSuccess] = useState(false);
   // jika sukses delete
   const [isScsDelete, setSczDelete] = useState(false);
-  // jika sukses update
-  const [isUpdated, setUpdated] = useState(false);
   // data products
   const [dataProducts, setProducts] = useState([]);
   // modal delete
@@ -32,10 +28,10 @@ const ListProduct = () => {
     () => {
       // jalankan refresh token untuk mengambil token dan expired
       refreshToken();
-      // mengambil data akun
+      // mengambil data produk
       getProducts();
     }, // data akan direfresh jika status success berubah
-    [isSuccess, isScsDelete, isUpdated]
+    [isScsDelete]
   );
 
   const refreshToken = async () => {
@@ -101,6 +97,7 @@ const ListProduct = () => {
 
   return (
     <div class="container grid px-6 mx-auto">
+      {/* modal delete product */}
       {showDelete && (
         <ModalDeleteProduct
           token={token}
@@ -146,6 +143,8 @@ const ListProduct = () => {
                 <tr class="text-gray-700 dark:text-gray-400" key={indx}>
                   <td class="px-4 py-3 text-sm">{indx + 1}</td>
                   <td class="px-4 py-3 text-sm">
+                    {/* show status product active/no */}
+                    {produk.active ? "🟢" : "🔴 "}
                     {produk.varianProduk.namavarian} -{" "}
                     {`[${produk.kodeproduk}]`}
                   </td>

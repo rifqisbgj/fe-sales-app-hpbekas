@@ -3,6 +3,11 @@ import React from "react";
 const navigationSale = [
   { name: "Dashboard", href: "/dashboard", current: false },
   { name: "Produk", href: "/dashboard/produk", current: false },
+  {
+    name: "Transaksi",
+    href: "/dashboard/transaksi",
+    current: false,
+  },
 ];
 const navigationQC = [
   { name: "Dashboard", href: "/dashboard", current: false },
@@ -21,6 +26,11 @@ const navigationSuper = [
   {
     name: "Quality Control",
     href: "/dashboard/quality-control",
+    current: false,
+  },
+  {
+    name: "Transaksi",
+    href: "/dashboard/transaksi",
     current: false,
   },
 ];
