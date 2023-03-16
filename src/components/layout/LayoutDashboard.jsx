@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,7 @@ import { SideBarSaler } from "../dashboard/sidebar-dashboard/SideBarSaler";
 import { SideBarQC } from "../dashboard/sidebar-dashboard/SideBarQC";
 // end siderbar data by user
 // ambil aksi logout dan reset
-import { Logout, reset } from "../../features/authSlice";
+import { GetUserByToken, Logout, reset } from "../../features/authSlice";
 // sidebar mobile
 import {
   SideBarMobQC,
@@ -20,7 +20,20 @@ import { useNavigate } from "react-router-dom";
 const LayoutDashboard = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const { isError, user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    // ambil data user
+    dispatch(GetUserByToken());
+  }, [dispatch]);
+
+  // validasi akses ke dashboard, jika user tidak ditemukan
+  useEffect(() => {
+    // jika error, maka arahkan ke halaman utama
+    if (isError) {
+      navigate("/");
+    }
+  }, [isError, navigate]);
 
   // logout handler
   const logout = () => {
@@ -30,6 +43,25 @@ const LayoutDashboard = ({ children }) => {
     dispatch(reset());
     // arahkan ke login
     navigate("/login");
+  };
+
+  const refreshToken = async () => {
+    try {
+      // ambil token user
+      const response = await apiAdapter.get("/users/token", {
+        withCredentials: true,
+      });
+      // setToken
+      setToken(response.data.data.token);
+      // decode dari token yang sudah diambil
+      const decoded = jwtDecode(response.data.data.token);
+      // set expire token
+      setExpire(decoded.exp);
+    } catch (error) {
+      if (error.response) {
+        navigate("/");
+      }
+    }
   };
 
   return (

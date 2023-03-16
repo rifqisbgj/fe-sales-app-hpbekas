@@ -1,13 +1,14 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export const SideBarSuper = () => {
   return (
     <div>
       <ul>
         <li class="relative px-6 py-3">
-          <a
+          <Link
             class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-            href="/dashboard"
+            to={"/dashboard"}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -25,12 +26,12 @@ export const SideBarSuper = () => {
             </svg>
 
             <span class="ml-4">Dashboard</span>
-          </a>
+          </Link>
         </li>
         <li class="relative px-6 py-3">
-          <a
+          <Link
             class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-            href="/dashboard/users"
+            to={"/dashboard/users"}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -48,12 +49,12 @@ export const SideBarSuper = () => {
             </svg>
 
             <span class="ml-4">User</span>
-          </a>
+          </Link>
         </li>
         <li class="relative px-6 py-3">
-          <a
+          <Link
             class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-            href="/dashboard/produk"
+            to={"/dashboard/produk"}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +72,7 @@ export const SideBarSuper = () => {
             </svg>
 
             <span class="ml-4">Produk</span>
-          </a>
+          </Link>
         </li>
         <li class="relative px-6 py-3">
           <a

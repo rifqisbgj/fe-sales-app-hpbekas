@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
-import { GetUserByToken } from "../../features/authSlice";
 import AlertFailed from "../alert/AlertFailed";
 import LayoutDashboard from "../layout/LayoutDashboard";
 import ChangeImages from "./ChangeImages";
@@ -34,31 +32,17 @@ const UpdateProduct = () => {
   const [isDeleteImg, setDeleteImg] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { isError, user } = useSelector((state) => state.auth);
   // get slug from params
   const { slug } = useParams();
 
-  // pengambilan data user pertama kali
   useEffect(() => {
-    // ambil data user
-    dispatch(GetUserByToken());
-  }, [dispatch]);
-
-  // validasi akses ke dashboard, jika user tidak ditemukan
-  useEffect(() => {
-    // jika error, maka arahkan ke halaman utama
-    if (isError) {
-      navigate("/");
-    }
-
     // get attribute product, include varian
     getAttProduct();
     // get brand value
     getBrand();
     // get token for update
     refreshToken();
-  }, [isError, navigate, isUpdateImg, isCreateImg, isDeleteImg]);
+  }, [isUpdateImg, isCreateImg, isDeleteImg]);
 
   // get fresh access token
   const refreshToken = async () => {
@@ -153,21 +137,18 @@ const UpdateProduct = () => {
   return (
     <LayoutDashboard>
       <div className="container grid px-6 mx-auto">
-        <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+        <h2 className="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
           Update Produk
         </h2>
-        <div class="bg-gray-800 shadow-md text-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+        <div className="bg-gray-800 shadow-md text-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
           {validation.length !== 0 && <AlertFailed msg={validation} />}
-          <div class="-mx-3 md:flex mb-6">
-            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-first-name"
-              >
+          <div className="-mx-3 md:flex mb-6">
+            <div className="md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 IMEI
               </label>
               <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                className="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                 placeholder="Phone IMEI"
                 value={imei}
                 // max input 15 digit
@@ -182,15 +163,12 @@ const UpdateProduct = () => {
                 }}
               />
             </div>
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-last-name"
-              >
+            <div className="md:w-1/2 px-3">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 Harga
               </label>
               <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                className="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                 placeholder="Harga Handphone"
                 value={harga}
                 type="text"
@@ -204,16 +182,13 @@ const UpdateProduct = () => {
               />
             </div>
           </div>
-          <div class="-mx-3 md:flex mb-6">
-            <div class="md:w-full px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-password"
-              >
+          <div className="-mx-3 md:flex mb-6">
+            <div className="md:w-full px-3">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 Deskripsi
               </label>
               <textarea
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                className="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                 id="grid-password"
                 type="password"
                 onChange={(e) => setDeskripsi(e.target.value)}
@@ -222,30 +197,24 @@ const UpdateProduct = () => {
               </textarea>
             </div>
           </div>
-          <div class="-mx-3 md:flex mb-2">
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-last-name"
-              >
+          <div className="-mx-3 md:flex mb-2">
+            <div className="md:w-1/2 px-3">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 Warna
               </label>
               <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                className="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                 placeholder="Warna Handphone"
                 value={warna}
                 onChange={(e) => setWarna(e.target.value)}
               />
             </div>
-            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-city"
-              >
+            <div className="md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 Storage
               </label>
               <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                className="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                 placeholder="Storage Handphone"
                 value={storage}
                 type="text"
@@ -258,15 +227,12 @@ const UpdateProduct = () => {
                 }}
               />
             </div>
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-zip"
-              >
+            <div className="md:w-1/2 px-3">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 RAM
               </label>
               <input
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                className="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                 placeholder="RAM Handphone"
                 value={ram}
                 type="text"
@@ -280,16 +246,13 @@ const UpdateProduct = () => {
               />
             </div>
           </div>
-          <div class="-mx-3 mt-4 md:flex mb-2">
-            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-city"
-              >
+          <div className="-mx-3 mt-4 md:flex mb-2">
+            <div className="md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 Merek
               </label>
               <select
-                class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                className=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 onChange={(e) => getVarian(e.target.value)}
                 value={idBrand}
               >
@@ -305,15 +268,12 @@ const UpdateProduct = () => {
                 ))}
               </select>
             </div>
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-zip"
-              >
+            <div className="md:w-1/2 px-3">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 Varian
               </label>
               <select
-                class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                className=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 onChange={(e) => setVarian(e.target.value)}
                 value={varian}
               >
@@ -327,15 +287,12 @@ const UpdateProduct = () => {
                   : ""}
               </select>
             </div>
-            <div class="md:w-1/2 px-3">
-              <label
-                class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
-                for="grid-zip"
-              >
+            <div className="md:w-1/2 px-3">
+              <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
                 Status
               </label>
               <select
-                class=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                className=" rounded-md block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 onChange={(e) => setStatusProduk(e.target.value)}
                 value={statusproduk}
               >
@@ -358,7 +315,7 @@ const UpdateProduct = () => {
             </button>
           </div>
         </div>
-        <div class="bg-gray-800 shadow-md text-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+        <div className="bg-gray-800 shadow-md text-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
           {/* call comp ChangeImages with image product data, token, and set status update img */}
           <ChangeImages
             oldimage={oldimage}

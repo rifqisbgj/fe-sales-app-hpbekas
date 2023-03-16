@@ -11,7 +11,7 @@ const CreateProduct = () => {
   // state produk attribute
   const [varian, setVarian] = useState();
   const [imei, setImei] = useState();
-  const [harga, setHarga] = useState();
+  const [harga, setHarga] = useState("0");
   const [warna, setWarna] = useState();
   const [deskripsi, setDeskripsi] = useState();
   const [ram, setRAM] = useState();
@@ -31,22 +31,11 @@ const CreateProduct = () => {
   // get var isError and user in state.auth
   const { isError, user } = useSelector((state) => state.auth);
 
-  // pengambilan data user pertama kali
-  useEffect(() => {
-    // ambil data user
-    dispatch(GetUserByToken());
-  }, [dispatch]);
-
   // validasi akses ke dashboard, jika user tidak ditemukan
   useEffect(() => {
-    // jika error, maka arahkan ke halaman utama
-    if (isError) {
-      navigate("/");
-    }
-
     getBrand();
     refreshToken();
-  }, [isError, allVarian, navigate]);
+  }, [allVarian, navigate]);
 
   // get fresh access token
   const refreshToken = async () => {
@@ -83,7 +72,7 @@ const CreateProduct = () => {
         "/product/store",
         {
           imei: imei,
-          harga: harga === "" && "0",
+          harga: harga,
           deskrispi: deskripsi,
           warna: warna,
           storage: storage,

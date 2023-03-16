@@ -1,8 +1,10 @@
 import jwtDecode from "jwt-decode";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
+import AlertSuccess from "../alert/AlertSuccess";
+import ModalDeleteProduct from "./ModalDeleteProduct";
 
 const ListProduct = () => {
   const navigate = useNavigate();
@@ -18,6 +20,13 @@ const ListProduct = () => {
   const [isUpdated, setUpdated] = useState(false);
   // data products
   const [dataProducts, setProducts] = useState([]);
+  // modal delete
+  const [showDelete, setShowDelete] = useState(false);
+  // id product for delete/deactive
+  const [idDelete, setIdDelete] = useState();
+  // for conditional msg before delete
+  const [isQc, setQcStatus] = useState(false);
+  const [codeDelete, setCodeDelete] = useState(false);
 
   useEffect(
     () => {
@@ -76,8 +85,35 @@ const ListProduct = () => {
     setProducts(res.data.data);
   };
 
+  // get account data for delete, and show modal
+  const deleteProduct = (kode, id, qcstatus) => {
+    // set modal ke true
+    setShowDelete(true);
+    // set id dari produk yang akan dihapus
+    setIdDelete(id);
+    // set kode produk yang akan dihapus
+    setCodeDelete(kode);
+    // jika produk memiliki qc
+    qcstatus != null ? setQcStatus(true) : setQcStatus(false);
+    // reset status aksi sebelumnya
+    setSczDelete(false);
+  };
+
   return (
     <div class="container grid px-6 mx-auto">
+      {showDelete && (
+        <ModalDeleteProduct
+          token={token}
+          setShowDelete={setShowDelete}
+          setSczDelete={setSczDelete}
+          idDelete={idDelete}
+          setIdDelete={setIdDelete}
+          isQc={isQc}
+          setQcStatus={setQcStatus}
+          setCodeDelete={setCodeDelete}
+          codeDelete={codeDelete}
+        />
+      )}
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
         Data Produk
       </h2>
@@ -90,9 +126,9 @@ const ListProduct = () => {
           Tambah Produk
         </button>
         {/* Notif jika berhasil membuat atau menghapus data */}
-        {/* {isSuccess && <AlertSuccess msg="Akun admin berhasil ditambahkan" />}
-        {isScsDelete && <AlertSuccess msg="Berhasil menghapus akun" />}
-        {isUpdated && <AlertSuccess msg="Berhasil memperbarui akun" />} */}
+        {isScsDelete && (
+          <AlertSuccess msg="Berhasil menghapus atau menon-aktifkan produk" />
+        )}
         <div class="w-full overflow-x-auto rounded-md">
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
@@ -110,11 +146,14 @@ const ListProduct = () => {
                 <tr class="text-gray-700 dark:text-gray-400" key={indx}>
                   <td class="px-4 py-3 text-sm">{indx + 1}</td>
                   <td class="px-4 py-3 text-sm">
-                    {produk.varianProduk.namavarian}
+                    {produk.varianProduk.namavarian} -{" "}
+                    {`[${produk.kodeproduk}]`}
                   </td>
                   <td class="px-4 py-3 text-sm">{produk.imei}</td>
                   <td class="px-4 py-3 text-sm">
-                    {produk.harga ? produk.harga : "Belum diatur"}
+                    {produk.harga
+                      ? "Rp. " + produk.harga.toLocaleString()
+                      : "Belum diatur"}
                   </td>
                   <td class="px-4 py-3 text-sm">
                     {produk.statusproduk === "BQC" && "Belum QC"}
@@ -126,10 +165,11 @@ const ListProduct = () => {
                   </td>
                   <div className="px-4 py-3 text-sm">
                     <div class="flex items-center space-x-4 text-sm">
-                      <a
+                      {/* Update */}
+                      <Link
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Edit"
-                        href={`/dashboard/produk/edit/${produk.slug}`}
+                        to={`/dashboard/produk/edit/${produk.slug}`}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -145,11 +185,13 @@ const ListProduct = () => {
                             d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
                           />
                         </svg>
-                      </a>
-                      <a
-                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                      </Link>
+                      {/* And Button Update */}
+                      {/* Detail */}
+                      <Link
+                        class="flex cursor-pointer items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Edit"
-                        href={`/dashboard/produk/view/${produk.slug}`}
+                        to={`/dashboard/produk/view/${produk.slug}`}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -170,10 +212,19 @@ const ListProduct = () => {
                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                           />
                         </svg>
-                      </a>
+                      </Link>
+                      {/* End Button Detail */}
+                      {/* Delete */}
                       <button
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Delete"
+                        onClick={() =>
+                          deleteProduct(
+                            produk.kodeproduk,
+                            produk.id,
+                            produk.qcProduct
+                          )
+                        }
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -190,6 +241,7 @@ const ListProduct = () => {
                           />
                         </svg>
                       </button>
+                      {/* And Button Delete */}
                     </div>
                   </div>
                 </tr>
