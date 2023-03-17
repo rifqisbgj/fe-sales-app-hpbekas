@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
@@ -95,6 +96,7 @@ const ListTransaction = () => {
                 <th class="px-4 py-3">Nama Pelanggan</th>
                 <th class="px-4 py-3">Varian Item</th>
                 <th class="px-4 py-3">Total Beli</th>
+                <th class="px-4 py-3">Tanggal Transaksi</th>
                 <th class="px-4 py-3">Actions</th>
               </tr>
             </thead>
@@ -108,7 +110,7 @@ const ListTransaction = () => {
                   <td class="px-4 py-3 text-sm">
                     <ul>
                       {trx.detail.map((item) => (
-                        <li key={item.id}>- {item.namavarian}</li>
+                        <li key={item.id}>- {item.varianProduk.namavarian}</li>
                       ))}
                     </ul>
                   </td>
@@ -121,6 +123,9 @@ const ListTransaction = () => {
                         0
                       )
                       .toLocaleString()}
+                  </td>
+                  <td class="px-4 py-3 text-sm">
+                    {moment(trx.createdAt).format("LL")}
                   </td>
                   <td class="px-4 py-3 text-sm">
                     <div class="flex items-center space-x-4 text-sm">

@@ -59,7 +59,7 @@ const ViewTransaction = () => {
 
   return (
     <div className="container grid px-6 mx-auto">
-      <nav class="flex my-6" aria-label="Breadcrumb">
+      <nav class="flex my-6" id="breadcrumb" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
           <li class="inline-flex items-center">
             <Link
@@ -182,7 +182,7 @@ const ViewTransaction = () => {
                       >
                         {index + 1}
                       </th>
-                      <td class="px-6 py-4">{item.namavarian}</td>
+                      <td class="px-6 py-4">{item.varianProduk.namavarian}</td>
                       <td class="px-6 py-4">
                         Rp. {item.harga.toLocaleString()}
                       </td>
