@@ -20,20 +20,7 @@ import { useNavigate } from "react-router-dom";
 const LayoutDashboard = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError, user } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    // ambil data user
-    dispatch(GetUserByToken());
-  }, [dispatch]);
-
-  // validasi akses ke dashboard, jika user tidak ditemukan
-  useEffect(() => {
-    // jika error, maka arahkan ke halaman utama
-    if (isError) {
-      navigate("/");
-    }
-  }, [isError, navigate]);
+  const { user } = useSelector((state) => state.auth);
 
   // logout handler
   const logout = () => {

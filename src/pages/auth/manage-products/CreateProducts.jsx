@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import LayoutDashboard from "../../../components/layout/LayoutDashboard";
-import ListProduct from "../../../components/manage-products/ListProduct";
 import { GetUserByToken } from "../../../features/authSlice";
+import LayoutDashboard from "../../../components/layout/LayoutDashboard";
+import CreateProduct from "../../../components/manage-products/CreateProduct";
 
-const DataProducts = () => {
+const CreateProducts = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isError, user } = useSelector((state) => state.auth);
@@ -25,13 +25,12 @@ const DataProducts = () => {
       navigate("/");
     }
   }, [isError, navigate]);
+
   return (
-    <>
-      <LayoutDashboard>
-        <ListProduct />
-      </LayoutDashboard>
-    </>
+    <LayoutDashboard>
+      <CreateProduct />
+    </LayoutDashboard>
   );
 };
 
-export default DataProducts;
+export default CreateProducts;

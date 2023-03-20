@@ -5,14 +5,14 @@ import ListProduct from "./pages/list-product/ListProduct";
 import Dashboard from "./pages/dashboard/Dashboard";
 import DataUsers from "./pages/auth/manage-users/DataUsers";
 import DataProducts from "./pages/auth/manage-products/DataProducts";
-import UpdateProduct from "./components/manage-products/UpdateProduct";
-import CreateProduct from "./components/manage-products/CreateProduct";
 import ViewProduct from "./components/manage-products/ViewProduct";
 import DataTransaction from "./pages/auth/manage-transaction/DataTransaction";
 import DetailTransaction from "./pages/auth/manage-transaction/DetailTransaction";
 import CreateTransaction from "./pages/auth/manage-transaction/CreateTransaction";
 import DataQC from "./pages/auth/manage-qc/DataQC";
 import DataVarian from "./pages/auth/manage-varian/DataVarian";
+import UpdateProducts from "./pages/auth/manage-products/UpdateProducts";
+import CreateProducts from "./pages/auth/manage-products/CreateProducts";
 export default function App() {
   return (
     <BrowserRouter>
@@ -31,9 +31,12 @@ export default function App() {
         <Route path="dashboard/users" element={<DataUsers />} />
         {/* Manage Product */}
         <Route path="dashboard/produk" element={<DataProducts />} />
-        <Route path="dashboard/produk/edit/:slug" element={<UpdateProduct />} />
+        <Route
+          path="dashboard/produk/edit/:slug"
+          element={<UpdateProducts />}
+        />
         <Route path="dashboard/produk/view/:slug" element={<ViewProduct />} />
-        <Route path="dashboard/produk/create" element={<CreateProduct />} />
+        <Route path="dashboard/produk/create" element={<CreateProducts />} />
         {/* Manage Transaction */}
         <Route path="dashboard/transaksi" element={<DataTransaction />} />
         <Route

@@ -6,9 +6,20 @@ import AlertSuccess from "../alert/AlertSuccess";
 import ModalCreateVarian from "./ModalCreateVarian";
 import ModalDeleteVarian from "./ModalDeleteVarian";
 import ModalUpdateVarian from "./ModalUpdateVarian";
+import ReactPaginate from "react-paginate";
 
 const ListVarians = () => {
   const navigate = useNavigate();
+
+  // pagination
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [pages, setPages] = useState(0);
+  const [rows, setRows] = useState(0);
+  const [keyword, setKeyword] = useState("");
+  const [query, setQuery] = useState("");
+  const [message, setMsg] = useState("");
+
   // token access for header Authorization
   const [token, setToken] = useState("");
   // token expire
@@ -34,7 +45,7 @@ const ListVarians = () => {
     refreshToken();
     // mengambil data varian
     getAllVarian();
-  }, [isSuccess, isUpdate, isDelete]);
+  }, [isSuccess, isUpdate, isDelete, page, keyword]);
 
   //   refresh token for access route
   const refreshToken = async () => {
@@ -80,11 +91,28 @@ const ListVarians = () => {
 
   //   get all varian
   const getAllVarian = async () => {
-    const res = await privateApi.get("/varian", {
-      headers: { Authorization: token },
-    });
+    const response = await privateApi.get(
+      `/varian?search_query=${keyword}&page=${page}&limit=${limit}`,
+      {
+        headers: { Authorization: token },
+      }
+    );
     // set state varian
-    setVarian(res.data.data);
+    setVarian(response.data.data);
+    setPage(response.data.page);
+    setPages(response.data.totalPage);
+    setRows(response.data.totalRows);
+  };
+
+  const changePage = ({ selected }) => {
+    setPage(selected);
+    if (selected === 9) {
+      setMsg(
+        "Jika tidak menemukan data yang Anda cari, silahkan cari data dengan kata kunci spesifik!"
+      );
+    } else {
+      setMsg("");
+    }
   };
 
   // handle create varian
@@ -158,11 +186,54 @@ const ListVarians = () => {
         {isDelete && (
           <AlertSuccess msg={`Varian ${namaVarian} berhasil dihapus`} />
         )}
+
+        <div className="grid grid-cols-2 mb-3">
+          <form>
+            <label
+              for="default-search"
+              class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+            >
+              Search
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+              </div>
+              <input
+                type="search"
+                id="default-search"
+                class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search Varian."
+                required
+              />
+              <button
+                type="submit"
+                class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+        </div>
+
         <div class="w-full overflow-x-auto rounded-md">
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                <th class="px-4 py-3">No</th>
                 <th class="px-4 py-3">Merek</th>
                 <th class="px-4 py-3">Nama Varian</th>
                 <th class="px-4 py-3">Jumlah Produk</th>
@@ -172,11 +243,10 @@ const ListVarians = () => {
             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
               {varians.map((varian, indx) => (
                 <tr class="text-gray-700 dark:text-gray-400" key={indx}>
-                  <td class="px-4 py-3 text-sm">{indx + 1}</td>
                   <td class="px-4 py-3 text-sm">{varian.merk.namamerek}</td>
                   <td class="px-4 py-3 text-sm">{varian.namavarian}</td>
                   <td class="px-4 py-3 text-sm">
-                    {varian.productCount === "0" ? (
+                    {varian.produk.length === 0 ? (
                       <button
                         onClick={() => navigate("/dashboard/produk/create")}
                         class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
@@ -184,7 +254,7 @@ const ListVarians = () => {
                         Tambah Produk
                       </button>
                     ) : (
-                      varian.productCount + " buah produk"
+                      varian.produk.length + " buah produk"
                     )}
                   </td>
                   <td class="px-4 py-3 text-sm">
@@ -237,6 +307,42 @@ const ListVarians = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div
+          className="flex items-center justify-between border-t border-gray-300  bg-gray-800 px-4 py-3 sm:px-6"
+          key={rows}
+        >
+          <div>
+            <p className="text-sm text-white invisible md:visible">
+              Total varian <span className="font-medium">{rows}</span>{" "}
+              <span className="font-medium">Page {rows ? page + 1 : 0}</span> of{" "}
+              <span className="font-medium">{pages}</span>
+            </p>
+          </div>
+          <div>
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={Math.min(10, pages)}
+              onPageChange={changePage}
+              containerClassName={
+                "isolate inline-flex -space-x-px rounded-md shadow-sm"
+              }
+              pageLinkClassName={
+                "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-400 ring-1 ring-inset ring-gray-300 hover:text-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              }
+              previousLinkClassName={
+                "relative inline-flex items-center rounded-l-md text-sm px-4 py-2 text-gray-400 font-semibold hover:text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 bg-gray-800 focus:z-20 focus:outline-offset-0"
+              }
+              nextLinkClassName={
+                "relative inline-flex items-center rounded-r-md text-sm px-4 py-2 text-gray-400 font-semibold ring-1 ring-inset hover:text-gray-700 ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              }
+              activeLinkClassName={
+                "relative inline-flex items-center bg-gray-700 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              }
+              disabledLinkClassName={""}
+            />
+          </div>
         </div>
       </div>
     </div>

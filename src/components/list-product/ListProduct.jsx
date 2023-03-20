@@ -33,8 +33,6 @@ const ListProduct = () => {
   );
   return (
     <>
-      {/* jumlah produk */}
-      {/* <p className="mb-3 text-sm">2.359 handphone tersedia</p> */}
       <ListItem products={products} />
     </>
   );

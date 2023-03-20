@@ -28,12 +28,7 @@ export default function MainNav() {
             placeholder="Cari di Bagja Cell"
           />
         </div>
-        <div class="flex items-center space-x-5 text-base">
-          <i class="fa-solid fa-user"></i>
-          <h2 class="border border-gray-500 text-gray-300 rounded py-1 px-5">
-            User name
-          </h2>
-        </div>
+        <div class="flex items-center space-x-5 text-base"></div>
       </nav>
     </>
   );

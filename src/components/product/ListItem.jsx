@@ -25,21 +25,10 @@ const ListItem = ({ products }) => {
               }
               alt={product.slug}
             />
-
-            {/* <div class="absolute top-3 m-1 rounded-md bg-white">
-            <p class="rounded-md bg-blue-700 p-1 text-[10px] font-bold uppercase tracking-wide text-white sm:py-1 sm:px-3">
-              Sale
-            </p>
-          </div> */}
             <div class="pt-4 pb-2 flex items-start justify-between">
               <div class="">
-                {/*  sm:text-sm md:text-sm" */}
-                {/* <p class="text-base font-regular sm:text-sm">
-                {product.namaproduk}
-              </p> */}
-                {/* sm:text-base md:text-lg */}
                 <p class="text-base font-semibold lg:text-lg">
-                  Rp{product.harga}
+                  Rp{" " + product.harga.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -48,7 +37,8 @@ const ListItem = ({ products }) => {
                 {product.varianProduk.namavarian}
               </p>
               <span className="text-[12px] font-medium text-gray-600">
-                8 GB <span className="text-slate-400">|</span> 128 GB
+                {product.ram} GB <span className="text-slate-400">|</span>{" "}
+                {product.storage} GB
               </span>
             </div>
           </Link>
