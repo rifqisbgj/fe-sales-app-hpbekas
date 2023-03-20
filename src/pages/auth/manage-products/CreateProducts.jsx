@@ -21,9 +21,6 @@ const CreateProducts = () => {
     if (isError) {
       navigate("/");
     }
-    if (user && user.data.role === "adminSale") {
-      navigate("/");
-    }
   }, [isError, navigate]);
 
   return (
