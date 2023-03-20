@@ -3,11 +3,23 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 import LayoutDashboard from "../layout/LayoutDashboard";
+import AlertSuccess from "../alert/AlertSuccess";
 import moment from "moment";
+import ModalCreateQC from "../manage-qc/ModalCreateQC";
+import ModalUpdateQC from "../manage-qc/ModalUpdateQC";
 
 const ViewProduct = () => {
+  const [token, setToken] = useState();
   // state produk
   const [dataProduk, setData] = useState();
+  // modal createQC
+  const [showCreate, setShowModal] = useState();
+  // modal updateQC
+  const [showUpdate, setModalUpdate] = useState();
+  // success status for create QC
+  const [isSuccess, setSuccess] = useState();
+  // success status for update QC
+  const [isUpdated, setUpdated] = useState();
 
   const navigate = useNavigate();
   // get slug from params
@@ -18,7 +30,7 @@ const ViewProduct = () => {
     refreshToken();
     // get attribute product, include varian
     getDetailProduct();
-  }, []);
+  }, [isSuccess, isUpdated]);
 
   // get fresh access token
   const refreshToken = async () => {
@@ -51,8 +63,28 @@ const ViewProduct = () => {
       }
     }
   };
+
   return (
     <LayoutDashboard>
+      {/* show modal create QC */}
+      {showCreate && dataProduk.id && (
+        <ModalCreateQC
+          setShowModal={setShowModal}
+          setSuccess={setSuccess}
+          token={token}
+          idProduk={dataProduk.id}
+        />
+      )}
+      {/* show modal update QC */}
+      {showUpdate && dataProduk.id && dataProduk.qcProduct.id && (
+        <ModalUpdateQC
+          setModalUpdate={setModalUpdate}
+          setUpdated={setUpdated}
+          token={token}
+          idQC={dataProduk.qcProduct.id}
+          idProduk={dataProduk.id}
+        />
+      )}
       <div className="container grid px-6 mx-auto">
         <nav class="flex my-6" aria-label="Breadcrumb">
           <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -122,6 +154,12 @@ const ViewProduct = () => {
           Detail Produk
         </h2>
         <div class="bg-gray-800 shadow-md text-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+          {isSuccess && (
+            <AlertSuccess msg={"Hasil Quality Control Berhasil Ditambahkan"} />
+          )}
+          {isUpdated && (
+            <AlertSuccess msg={"Hasil Quality Control Berhasil Diperbarui"} />
+          )}
           <label className="text-xl text-gray-300 py-5">Informasi Produk</label>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col">
@@ -168,7 +206,7 @@ const ViewProduct = () => {
                   dataProduk.statusproduk === "PQC" &&
                   "Proses Quality Control"}
                 {dataProduk &&
-                  dataProduk.statusproduk === "PQC" &&
+                  dataProduk.statusproduk === "SQC" &&
                   "Selesai Quality Control"}
                 {dataProduk && dataProduk.statusproduk === "SJ" && "Siap Jual"}
                 {dataProduk && dataProduk.statusproduk === "D" && "Denied"}
@@ -215,7 +253,9 @@ const ViewProduct = () => {
               Deskripsi Produk
             </label>
             <p className="mt-1 font-medium">
-              {dataProduk && dataProduk.deskripsi !== ""
+              {dataProduk &&
+              dataProduk.deskripsi !== "" &&
+              dataProduk.deskripsi !== null
                 ? dataProduk.deskripsi
                 : "-"}
             </p>
@@ -238,9 +278,46 @@ const ViewProduct = () => {
           </div>
 
           <hr class="h-px mt-6 bg-gray-200 border-0 dark:bg-gray-700"></hr>
-          <label className="text-xl text-gray-300 py-5">
-            Hasil Quality Control
-          </label>
+          <div className="flex justify-between">
+            <label className="text-xl text-gray-300 py-5">
+              Hasil Quality Control
+            </label>
+            {dataProduk && dataProduk.qcProduct === null ? (
+              <button onClick={() => setShowModal(true)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+            ) : (
+              <button onClick={() => setModalUpdate(true)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col">
               <label htmlFor="" className="text-sm text-gray-300">
@@ -260,7 +337,7 @@ const ViewProduct = () => {
                 {dataProduk && dataProduk.qcProduct != null
                   ? dataProduk.qcProduct.batre
                     ? "OK"
-                    : "RUSAK"
+                    : "TIDAK BAIK"
                   : "-"}
               </p>
             </div>
@@ -272,7 +349,7 @@ const ViewProduct = () => {
                 {dataProduk && dataProduk.qcProduct != null
                   ? dataProduk.qcProduct.layar
                     ? "OK"
-                    : "RUSAK"
+                    : "TIDAK BAIK"
                   : "-"}
               </p>
             </div>
@@ -284,7 +361,7 @@ const ViewProduct = () => {
                 {dataProduk && dataProduk.qcProduct != null
                   ? dataProduk.qcProduct.sinyal
                     ? "OK"
-                    : "RUSAK"
+                    : "TIDAK BAIK"
                   : "-"}
               </p>
             </div>

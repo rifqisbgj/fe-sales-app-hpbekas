@@ -1,51 +1,42 @@
-import jwtDecode from "jwt-decode";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
-import ModalCreateUser from "./ModalCreateUser";
 import AlertSuccess from "../alert/AlertSuccess";
-import ModalDeleteUser from "./ModalDeleteUser";
-import { ModalUpdateUser } from "./ModalUpdateUser";
-import moment from "moment/moment";
+import ModalCreateVarian from "./ModalCreateVarian";
+import ModalDeleteVarian from "./ModalDeleteVarian";
+import ModalUpdateVarian from "./ModalUpdateVarian";
 
-const ListUser = () => {
+const ListVarians = () => {
   const navigate = useNavigate();
   // token access for header Authorization
   const [token, setToken] = useState("");
   // token expire
   const [expire, setExpire] = useState("");
-  // account list
-  const [dataUsers, setDataUsers] = useState([]);
-  // show or no create user modal
+  const [varians, setVarian] = useState([]);
+
+  //   show create modal
   const [showModal, setShowModal] = useState(false);
-  // show or no delete user modal
-  const [showDelete, setShowDelete] = useState(false);
-  // show or no update user modal
-  const [showUpdate, setShowUpdate] = useState(false);
-  // jika sukses tambah
+  //   show update modal
+  const [updateModal, setUpdateModal] = useState(false);
+  // show delete modal
+  const [deleteModal, setShowDelete] = useState(false);
+
+  //   status action
   const [isSuccess, setSuccess] = useState(false);
-  // jika sukses delete
-  const [isScsDelete, setSczDelete] = useState(false);
-  // jika sukses update
-  const [isUpdated, setUpdated] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
+  const [idVarian, setIdVarian] = useState("");
+  const [namaVarian, setNamaVarian] = useState("");
 
-  // user email for delete/update
-  const [email, setEmail] = useState("");
-  // id user for update
-  const [idUserUpdate, setIdUser] = useState("");
+  useEffect(() => {
+    // jalankan refresh token untuk mengambil token dan expired
+    refreshToken();
+    // mengambil data varian
+    getAllVarian();
+  }, [isSuccess, isUpdate, isDelete]);
 
-  useEffect(
-    () => {
-      // jalankan refresh token untuk mengambil token dan expired
-      refreshToken();
-      // mengambil data akun
-      getAdminUsers();
-    }, // data akan direfresh jika status success berubah
-    [isSuccess, isScsDelete, isUpdated]
-  );
-
-  // get fresh access token
+  //   refresh token for access route
   const refreshToken = async () => {
     try {
       // ambil token user
@@ -87,153 +78,121 @@ const ListUser = () => {
     }
   );
 
-  // get account from db
-  const getAdminUsers = async () => {
-    // Ambil data user api yang sudah terconfig sebelumnya
-    const res = await privateApi.get("/users", {
-      // proses pengambilan data dilakukan dengan pemberian headers Authorization
-      headers: {
-        Authorization: token,
-      },
+  //   get all varian
+  const getAllVarian = async () => {
+    const res = await privateApi.get("/varian", {
+      headers: { Authorization: token },
     });
-    // set data user
-    setDataUsers(res.data.data);
+    // set state varian
+    setVarian(res.data.data);
   };
 
-  // get account data for delete, and show modal
-  const dataDeleteUser = (email) => {
-    // set modal ke true
-    setShowDelete(true);
-    // set email dari user yang akan dihapus
-    setEmail(email);
-    // reset status aksi sebelumnya
-    resetAction();
-  };
-
-  // jika menambahkan data, tampilkan modal create
-  const createAccount = () => {
-    // tampilkan modal create
+  // handle create varian
+  const createVarian = () => {
+    resetStatus();
     setShowModal(true);
-    resetAction();
   };
 
-  // jika memperbarui data, maka tambahkan id yg dikirim button ke state
-  const updateAccount = async (id) => {
-    // set id user yg akan diperbarui
-    setIdUser(id);
-    // tampilkan modal
-    setShowUpdate(true);
-    // reset status aksi sebelumnya
-    resetAction();
+  // handle update varian
+  const updateVarian = (id) => {
+    resetStatus();
+    setUpdateModal(true);
+    setIdVarian(id);
   };
 
-  // mereset status aksi sebelumnya
-  const resetAction = () => {
-    // reset status sukses update
-    setUpdated(false);
-    // reset status sukses delete
-    setSczDelete(false);
-    // reset status sukses create
+  // handle delete varian
+  const deleteVarian = (id, nama) => {
+    resetStatus();
+    setShowDelete(true);
+    setIdVarian(id);
+    setNamaVarian(nama);
+  };
+
+  const resetStatus = () => {
     setSuccess(false);
+    setIsUpdate(false);
+    setIsDelete(false);
+    setNamaVarian("");
+    setIdVarian("");
   };
 
   return (
     <div class="container grid px-6 mx-auto">
-      {/* menampilkan modal create, jika bernilai true */}
       {showModal && (
-        <ModalCreateUser
+        <ModalCreateVarian
+          token={token}
           setShowModal={setShowModal}
           setSuccess={setSuccess}
-          token={token}
         />
       )}
-      {/* menampilkan modal, jika modal delete true */}
-      {showDelete && (
-        <ModalDeleteUser
+      {updateModal && (
+        <ModalUpdateVarian
+          setUpdateModal={setUpdateModal}
           token={token}
-          email={email}
-          setEmail={setEmail}
-          setSczDelete={setSczDelete}
+          setIsUpdate={setIsUpdate}
+          idVarian={idVarian}
+        />
+      )}
+      {deleteModal && (
+        <ModalDeleteVarian
+          token={token}
+          setIsDelete={setIsDelete}
           setShowDelete={setShowDelete}
-        />
-      )}
-
-      {/* menampilkan modal update user */}
-      {showUpdate && (
-        <ModalUpdateUser
-          setShowUpdate={setShowUpdate}
-          id={idUserUpdate}
-          token={token}
-          setUpdated={setUpdated}
+          namaVarian={namaVarian}
+          idVarian={idVarian}
         />
       )}
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-        Data Admin
+        Data Varian Ponsel
       </h2>
+
       <div class="w-full overflow-hidden rounded-lg shadow-xs">
         <button
           class="px-4 py-2 mb-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-          onClick={() => createAccount()}
+          onClick={() => createVarian()}
         >
-          Tambah Admin
+          Tambah Varian
         </button>
-        {/* Notif jika berhasil membuat atau menghapus data */}
-        {isSuccess && <AlertSuccess msg="Akun admin berhasil ditambahkan" />}
-        {isScsDelete && <AlertSuccess msg="Berhasil menghapus akun" />}
-        {isUpdated && <AlertSuccess msg="Berhasil memperbarui akun" />}
+        {isSuccess && <AlertSuccess msg="Varian berhasil ditambahkan" />}
+        {isUpdate && <AlertSuccess msg="Varian berhasil diperbarui" />}
+        {isDelete && (
+          <AlertSuccess msg={`Varian ${namaVarian} berhasil dihapus`} />
+        )}
         <div class="w-full overflow-x-auto rounded-md">
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                 <th class="px-4 py-3">No</th>
-                <th class="px-4 py-3">Nama</th>
-                <th class="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Tanggal Gabung</th>
+                <th class="px-4 py-3">Merek</th>
+                <th class="px-4 py-3">Nama Varian</th>
+                <th class="px-4 py-3">Jumlah Produk</th>
                 <th class="px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-              {dataUsers.map((user, indx) => (
-                <tr class="text-gray-700 dark:text-gray-400" key={user.email}>
+              {varians.map((varian, indx) => (
+                <tr class="text-gray-700 dark:text-gray-400" key={indx}>
                   <td class="px-4 py-3 text-sm">{indx + 1}</td>
-                  <td class="px-4 py-3">
-                    <div class="flex items-center text-sm">
-                      <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                        <img
-                          class="object-cover w-full h-full rounded-full"
-                          src={"https://ui-avatars.com/api/?name=" + user.nama}
-                          alt=""
-                          loading="lazy"
-                        />
-                        <div
-                          class="absolute inset-0 rounded-full shadow-inner"
-                          aria-hidden="true"
-                        ></div>
-                      </div>
-                      <div>
-                        <p class="font-semibold">{user.nama}</p>
-                        <p class="text-xs text-gray-600 dark:text-gray-400">
-                          {user.email}
-                        </p>
-                      </div>
-                    </div>
+                  <td class="px-4 py-3 text-sm">{varian.merk.namamerek}</td>
+                  <td class="px-4 py-3 text-sm">{varian.namavarian}</td>
+                  <td class="px-4 py-3 text-sm">
+                    {varian.productCount === "0" ? (
+                      <button
+                        onClick={() => navigate("/dashboard/produk/create")}
+                        class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                      >
+                        Tambah Produk
+                      </button>
+                    ) : (
+                      varian.productCount + " buah produk"
+                    )}
                   </td>
-                  <td class="px-4 py-3 text-xs">
-                    <span class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-500 text-white">
-                      {user.role === "adminSale" ? "Admin Sale" : ""}
-                      {user.role === "adminQC" ? "Admin QC" : ""}
-                    </span>
-                  </td>
-                  <td class="px-4 py-3 text-xs">
-                    {/* menampilkan tanggal gabung */}
-                    {moment(user.createdAt).format("LL")}
-                  </td>
-                  <td class="px-4 py-3">
+                  <td class="px-4 py-3 text-sm">
                     <div class="flex items-center space-x-4 text-sm">
                       <button
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Edit"
-                        onClick={() => updateAccount(user.id)}
+                        onClick={() => updateVarian(varian.id)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -253,7 +212,9 @@ const ListUser = () => {
                       <button
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Delete"
-                        onClick={() => dataDeleteUser(user.email)}
+                        onClick={() =>
+                          deleteVarian(varian.id, varian.namavarian)
+                        }
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -282,4 +243,4 @@ const ListUser = () => {
   );
 };
 
-export default ListUser;
+export default ListVarians;

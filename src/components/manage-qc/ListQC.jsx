@@ -1,23 +1,21 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 
-const ListTransaction = () => {
+const ListQC = () => {
   // token access for header Authorization
   const [token, setToken] = useState("");
   // token expire
   const [expire, setExpire] = useState("");
-  const [transaksi, setDataTransaksi] = useState([]);
-
-  const navigate = useNavigate();
+  const [qualityControl, setQC] = useState([]);
 
   useEffect(() => {
     // jalankan refresh token untuk mengambil token dan expired
     refreshToken();
-    // mengambil data transaksi
-    getTransaction();
+    // mengambil data QC
+    getQCResult();
   }, []);
 
   //   refresh token for access route
@@ -62,77 +60,75 @@ const ListTransaction = () => {
     }
   );
 
-  //   get all transaction
-  const getTransaction = async () => {
-    const res = await privateApi.get("/transaksi", {
+  //   get all qc result
+  const getQCResult = async () => {
+    const res = await privateApi.get("/qc", {
       headers: { Authorization: token },
     });
-    console.log(res);
-    // set state transaksi
-    setDataTransaksi(res.data.data);
+    // set state qc
+    setQC(res.data.data);
   };
-
   return (
     <div class="container grid px-6 mx-auto">
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-        Data Transaksi
+        Data Hasil Quality Control
       </h2>
 
       <div class="w-full overflow-hidden rounded-lg shadow-xs">
-        <button
-          onClick={() => navigate("/dashboard/transaksi/create")}
-          class="px-4 py-2 mb-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-        >
-          Tambah Transaksi
-        </button>
         <div class="w-full overflow-x-auto rounded-md">
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                 <th class="px-4 py-3">No</th>
-                <th class="px-4 py-3">Nama Pelanggan</th>
-                <th class="px-4 py-3">Varian Item</th>
-                <th class="px-4 py-3">Total Beli</th>
-                <th class="px-4 py-3">Tanggal Transaksi</th>
+                <th class="px-4 py-3">Kode QC</th>
+                <th class="px-4 py-3">Nama Admin</th>
+                <th class="px-4 py-3">Produk</th>
+                <th class="px-4 py-3">IMEI</th>
+                <th class="px-4 py-3">Tanggal QC</th>
                 <th class="px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-              {transaksi.map((trx, indx) => (
+              {qualityControl.map((qc, indx) => (
                 <tr class="text-gray-700 dark:text-gray-400" key={indx}>
                   <td class="px-4 py-3 text-sm">{indx + 1}</td>
+                  <td class="px-4 py-3 text-sm">{qc.kodeQC}</td>
+                  <td class="px-4 py-3 text-sm">{qc.qcBy.nama}</td>
                   <td class="px-4 py-3 text-sm">
-                    {trx.transaksiCustomer.nama}
+                    {qc.produkQC.varianProduk.namavarian} - [
+                    {qc.produkQC.kodeproduk}]
                   </td>
+                  <td class="px-4 py-3 text-sm">{qc.produkQC.imei}</td>
                   <td class="px-4 py-3 text-sm">
-                    <ul>
-                      {trx.detail.map((item) => (
-                        <li key={item.id}>- {item.varianProduk.namavarian}</li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td class="px-4 py-3 text-sm">
-                    Rp
-                    {trx.detail
-                      .reduce(
-                        (total, currentItem) =>
-                          (total = total + currentItem.harga),
-                        0
-                      )
-                      .toLocaleString()}
-                  </td>
-                  <td class="px-4 py-3 text-sm">
-                    {moment(trx.createdAt).format("LL")}
+                    {moment(qc.createdAt).format("LL")}
                   </td>
                   <td class="px-4 py-3 text-sm">
                     <div class="flex items-center space-x-4 text-sm">
                       {/* Detail */}
                       <Link
-                        class="flex cursor-pointer bg-blue-600 items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white rounded-lg  focus:outline-none focus:shadow-outline-gray"
+                        class="flex cursor-pointer items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Edit"
-                        to={`/dashboard/transaksi/view/${trx.kode_invoice}`}
+                        to={`/dashboard/produk/view/${qc.produkQC.slug}`}
                       >
-                        Detail Transaksi
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
                       </Link>
                       {/* End Button Detail */}
                     </div>
@@ -147,4 +143,4 @@ const ListTransaction = () => {
   );
 };
 
-export default ListTransaction;
+export default ListQC;

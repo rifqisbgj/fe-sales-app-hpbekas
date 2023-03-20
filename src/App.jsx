@@ -11,6 +11,8 @@ import ViewProduct from "./components/manage-products/ViewProduct";
 import DataTransaction from "./pages/auth/manage-transaction/DataTransaction";
 import DetailTransaction from "./pages/auth/manage-transaction/DetailTransaction";
 import CreateTransaction from "./pages/auth/manage-transaction/CreateTransaction";
+import DataQC from "./pages/auth/manage-qc/DataQC";
+import DataVarian from "./pages/auth/manage-varian/DataVarian";
 export default function App() {
   return (
     <BrowserRouter>
@@ -42,6 +44,8 @@ export default function App() {
           path="dashboard/transaksi/create"
           element={<CreateTransaction />}
         />
+        <Route path="dashboard/quality-control" element={<DataQC />} />
+        <Route path="dashboard/varian" element={<DataVarian />} />
       </Routes>
     </BrowserRouter>
   );
