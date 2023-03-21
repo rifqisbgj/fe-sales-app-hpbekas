@@ -246,16 +246,9 @@ const ListVarians = () => {
                   <td class="px-4 py-3 text-sm">{varian.merk.namamerek}</td>
                   <td class="px-4 py-3 text-sm">{varian.namavarian}</td>
                   <td class="px-4 py-3 text-sm">
-                    {varian.produk.length === 0 ? (
-                      <button
-                        onClick={() => navigate("/dashboard/produk/create")}
-                        class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-                      >
-                        Tambah Produk
-                      </button>
-                    ) : (
-                      varian.produk.length + " buah produk"
-                    )}
+                    {varian.produk.length === 0
+                      ? "Belum ada produk"
+                      : varian.produk.length + " buah produk"}
                   </td>
                   <td class="px-4 py-3 text-sm">
                     <div class="flex items-center space-x-4 text-sm">
@@ -279,6 +272,33 @@ const ListVarians = () => {
                           />
                         </svg>
                       </button>
+                      {/* Detail */}
+                      <Link
+                        class="flex cursor-pointer items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                        aria-label="Edit"
+                        to={`/dashboard/varian/view/${varian.id}`}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </Link>
+                      {/* End Button Detail */}
                       <button
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Delete"

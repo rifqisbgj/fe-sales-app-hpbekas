@@ -21,7 +21,7 @@ const LoginForm = () => {
     () => {
       // jika user tersedia atau berhasil login, arahkan ke dashboard
       if (user) {
-        navigate("/dashboard");
+        navigate("/dashboard/");
       }
       // reset state
       dispatch(reset());

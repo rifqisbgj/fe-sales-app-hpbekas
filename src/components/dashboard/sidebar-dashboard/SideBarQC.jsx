@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 export const SideBarQC = () => {
   return (
@@ -6,9 +7,13 @@ export const SideBarQC = () => {
       <div>
         <ul>
           <li class="relative px-6 py-3">
-            <a
-              class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-              href="/dashboard"
+            <NavLink
+              className={(navData) =>
+                navData.isActive
+                  ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                  : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+              }
+              to={"/dashboard/"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -25,12 +30,16 @@ export const SideBarQC = () => {
                 />
               </svg>
               <span class="ml-4">Dashboard</span>
-            </a>
+            </NavLink>
           </li>
           <li class="relative px-6 py-3">
-            <a
-              class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-              href="../cards.html"
+            <NavLink
+              className={(navData) =>
+                navData.isActive
+                  ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                  : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+              }
+              to={"/dashboard/produk"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -47,12 +56,16 @@ export const SideBarQC = () => {
                 />
               </svg>
               <span class="ml-4">Produk</span>
-            </a>
+            </NavLink>
           </li>
           <li class="relative px-6 py-3">
-            <a
-              class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-              href="../charts.html"
+            <NavLink
+              className={(navData) =>
+                navData.isActive
+                  ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                  : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+              }
+              to={"/dashboard/quality-control"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +82,7 @@ export const SideBarQC = () => {
                 />
               </svg>
               <span class="ml-4">Quality Control</span>
-            </a>
+            </NavLink>
           </li>
         </ul>
       </div>

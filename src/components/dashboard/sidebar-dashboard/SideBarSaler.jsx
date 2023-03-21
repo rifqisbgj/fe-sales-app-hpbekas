@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export const SideBarSaler = () => {
   return (
@@ -7,9 +7,13 @@ export const SideBarSaler = () => {
       <div>
         <ul>
           <li class="relative px-6 py-3">
-            <Link
-              class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-              to={"/dashboard"}
+            <NavLink
+              className={(navData) =>
+                navData.isActive
+                  ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                  : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+              }
+              to={"/dashboard/"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -26,11 +30,15 @@ export const SideBarSaler = () => {
                 />
               </svg>
               <span class="ml-4">Dashboard</span>
-            </Link>
+            </NavLink>
           </li>
           <li class="relative px-6 py-3">
-            <Link
-              class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            <NavLink
+              className={(navData) =>
+                navData.isActive
+                  ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                  : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+              }
               to={"/dashboard/produk"}
             >
               <svg
@@ -48,11 +56,47 @@ export const SideBarSaler = () => {
                 />
               </svg>
               <span class="ml-4">Produk</span>
-            </Link>
+            </NavLink>
           </li>
           <li class="relative px-6 py-3">
-            <Link
-              class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            <NavLink
+              className={(navData) =>
+                navData.isActive
+                  ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                  : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+              }
+              to={"/dashboard/varian"}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 6h.008v.008H6V6z"
+                />
+              </svg>
+
+              <span class="ml-4">Varian</span>
+            </NavLink>
+          </li>
+          <li class="relative px-6 py-3">
+            <NavLink
+              className={(navData) =>
+                navData.isActive
+                  ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                  : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+              }
               to={"/dashboard/transaksi"}
             >
               <svg
@@ -71,7 +115,7 @@ export const SideBarSaler = () => {
               </svg>
 
               <span class="ml-4">Transaksi</span>
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </div>

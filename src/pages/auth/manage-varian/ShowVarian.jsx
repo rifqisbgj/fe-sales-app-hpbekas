@@ -1,13 +1,13 @@
 import React from "react";
 import LayoutDashboard from "../../../components/layout/LayoutDashboard";
-import ListVarians from "../../../components/manage-varian/ListVarians";
+import DetailVarian from "../../../components/manage-varian/DetailVarian";
 
-const DataVarian = () => {
+const ShowVarian = () => {
   return (
     <LayoutDashboard>
-      <ListVarians />
+      <DetailVarian />
     </LayoutDashboard>
   );
 };
 
-export default DataVarian;
+export default ShowVarian;
