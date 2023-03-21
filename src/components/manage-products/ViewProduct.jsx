@@ -26,7 +26,7 @@ const ViewProduct = () => {
   const { slug } = useParams();
 
   useEffect(() => {
-    // get token for update
+    // get token for view product
     refreshToken();
     // get attribute product, include varian
     getDetailProduct();
@@ -48,14 +48,12 @@ const ViewProduct = () => {
     }
   };
 
-  // get detail product for update
+  // get detail product
   const getDetailProduct = async () => {
     try {
       // get detail product, find by slug
       const res = await privateApi.get(`/product/detail/${slug}`);
-      //   console.log(res.data.data);
       const data = await res.data.data;
-      console.log(data);
       setData(data);
     } catch (error) {
       if (error.response) {
