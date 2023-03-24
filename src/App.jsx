@@ -18,6 +18,7 @@ import PageNotFound from "./pages/error-page/PageNotFound";
 import Forbidden from "./pages/error-page/Forbidden";
 import ProtectedRoute from "./util/ProtectedRoute";
 import Redirect from "./util/Redirect";
+import Detail from "./pages/list-product/Detail";
 export default function App() {
   return (
     <BrowserRouter>
@@ -26,6 +27,7 @@ export default function App() {
         <Route index element={<Home />} />
         {/* Selling list product */}
         <Route path="products" element={<ListProduct />} />
+        <Route path="products/:slug" element={<Detail />} />
 
         {/* Auth */}
         <Route path="login" element={<Login />} />

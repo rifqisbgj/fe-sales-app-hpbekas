@@ -1,23 +1,17 @@
 import { Link } from "react-router-dom";
-import ItemNotFound from "./ItemNotFound";
 
 const ListItem = ({ products }) => {
-  console.log(products.length);
-  if (products.length === 0) {
-    return <ItemNotFound />;
-  }
-
   return (
     <main className="grid grid-cols-2 gap-x-6 gap-y-5 px-1 lg:mt-1 lg:grid-cols-5 lg:gap-x-4">
       {/* tampilkan produk berdasarkan data dari state products */}
       {products.map((product) => (
         <article
-          class="relative rounded-xl bg-white p-3 shadow-lg hover:shadow-xl"
+          class="relative rounded-xl border border-gray-200 bg-white p-3 shadow-md hover:shadow-xl"
           key={product.slug}
         >
           <Link to={"/product/" + product.slug}>
             <img
-              className="transition ease-in-out delay-150 duration-300 h-44 w-full object-cover rounded hover:object-scale-down"
+              className="transition ease-in-out delay-150 duration-300 h-44 w-full object-cover rounded"
               src={
                 product.gambarProduk.length
                   ? `http://localhost:8080/product-image/${product.gambarProduk[0].image}`

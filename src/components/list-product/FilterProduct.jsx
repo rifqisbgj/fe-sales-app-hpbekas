@@ -26,6 +26,17 @@ function classNames(...classes) {
 }
 
 const FilterProduct = () => {
+  // menyimpan data product
+  const [products, setProduct] = useState([]);
+  // produk dengan awalan createdAt saat ini yg sudah ditampilkan
+  const [tempCreate, setTempCreate] = useState(0);
+  // menyimpan createdAt data terakhir diget dari db
+  const [lastCreate, setLastCreate] = useState(0);
+  // jika masih ada data produk, lanjutkan scroll
+  const [hasMore, setHasMore] = useState(true);
+  // kata kunci pencarian produk
+  const [keyword, setKeyword] = useState("");
+
   // memberikan state untuk mengaktifkan/non-aktifkan tampilan mobile
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   // menampung data brand yang diambil dari api
@@ -65,6 +76,7 @@ const FilterProduct = () => {
   };
 
   const handleChange = (e) => {
+    reset();
     // ambil value pada url query dengan var brand
     const { brand } = filterState;
     // ambil value dan status checkbox
@@ -88,27 +100,35 @@ const FilterProduct = () => {
   };
 
   const checkFilterPrice = () => {
+    reset();
     const { minPrice, maxPrice } = filterState;
-    if (minPrice > maxPrice && maxPrice !== null) {
+    if (minPrice >= maxPrice && maxPrice !== null) {
       return setMsg("Harga maksimum harus lebih besar dari harga minimum.");
     }
     setMsg("");
   };
   const setMaxPrice = (e) => {
+    reset();
     // jika value harga max tidak ada
     if (!e) return setStateFilter({ maxPrice: undefined });
     // jika value harga max ada
     setStateFilter({ maxPrice: e });
-    console.log("max " + filterState.maxPrice);
     checkFilterPrice();
   };
   const setMinPrice = (e) => {
+    reset();
     // jika value harga min tidak ada
     if (!e) return setStateFilter({ minPrice: undefined });
     // jika value harga min ada
     setStateFilter({ minPrice: e });
-    console.log("min " + filterState.minPrice);
     checkFilterPrice();
+  };
+
+  const reset = () => {
+    setProduct([]);
+    setTempCreate(0);
+    setHasMore(true);
+    setLastCreate(0);
   };
 
   useEffect(
@@ -132,9 +152,13 @@ const FilterProduct = () => {
         setMinPrice={setMinPrice}
         filterState={filterState}
       />
-      <MainNav />
+      <MainNav
+        setKeyword={setKeyword}
+        setProduct={setProduct}
+        setTempCreate={setTempCreate}
+      />
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-baseline justify-between border-b border-gray-200 pt-24 pb-6">
+        <div className="flex items-baseline justify-between border-b border-gray-200 pt-10 pb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             Produk Tersedia
           </h1>
@@ -203,7 +227,7 @@ const FilterProduct = () => {
           {/* Desktop Page Filter */}
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
             {/* Filters */}
-            <form className="hidden bg-white shadow-xl lg:block h-fit px-3 rounded-lg">
+            <form className="hidden bg-white border border-gray-200 shadow-md lg:block h-fit px-3 rounded-lg">
               {/* Filter by Brands */}
               <Disclosure as="div" defaultOpen className="border-b py-6">
                 {({ open }) => (
@@ -317,8 +341,21 @@ const FilterProduct = () => {
 
             {/* Product grid */}
             <div className="lg:col-span-4">
-              <AlertFilterPrice errPriceMsg={errPriceMsg} />
-              {<ListProduct errPriceMsg={errPriceMsg} setMsg={setMsg} />}
+              {errPriceMsg && <AlertFilterPrice errPriceMsg={errPriceMsg} />}
+              <ListProduct
+                errPriceMsg={errPriceMsg}
+                setMsg={setMsg}
+                setProduct={setProduct}
+                products={products}
+                setTempCreate={setTempCreate}
+                tempCreate={tempCreate}
+                setLastCreate={setLastCreate}
+                lastCreate={lastCreate}
+                setHasMore={setHasMore}
+                hasMore={hasMore}
+                keyword={keyword}
+                setKeyword={setKeyword}
+              />
             </div>
           </div>
         </section>
