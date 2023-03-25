@@ -14,6 +14,7 @@ const ChangeImages = ({
   idproduk,
   setDeleteImg,
   isDeleteImg,
+  setmsgUpdate,
 }) => {
   // store file before upload (create new image)
   const [imageProduk, setImageProduk] = useState([]);
@@ -158,6 +159,7 @@ const ChangeImages = ({
     setCreateImg(false);
     setUpdateImg(false);
     setDeleteImg(false);
+    setmsgUpdate([]);
   };
 
   return (
@@ -173,6 +175,7 @@ const ChangeImages = ({
       {/* END ALERT */}
       {/* Gambar Produk Terkini */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-5 px-1 mt-2 mb-3 lg:grid-cols-5 lg:gap-x-4">
+        {oldimage && oldimage.length === 0 && "Gambar produk belum tersedia"}
         {oldimage
           ? oldimage.map((imgproduk, indx) => (
               <figure className="relative max-w-xs" key={indx}>

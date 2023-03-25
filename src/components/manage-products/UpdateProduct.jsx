@@ -116,7 +116,7 @@ const UpdateProduct = () => {
         {
           imei: imei,
           harga: harga.toString() === "" ? "0" : harga.toString(),
-          deskrispi: deskripsi,
+          deskripsi: deskripsi,
           warna: warna,
           storage: storage,
           ram: ram,
@@ -337,6 +337,7 @@ const UpdateProduct = () => {
           setCreateImg={setCreateImg}
           setDeleteImg={setDeleteImg}
           isDeleteImg={isDeleteImg}
+          setmsgUpdate={setValidation}
         />
       </div>
     </div>

@@ -75,7 +75,7 @@ const CreateProduct = () => {
         {
           imei: imei,
           harga: harga,
-          deskrispi: deskripsi,
+          deskripsi: deskripsi,
           warna: warna,
           storage: storage,
           ram: ram,
