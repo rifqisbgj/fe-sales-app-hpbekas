@@ -18,6 +18,7 @@ const UpdateProduct = () => {
   const [statusproduk, setStatusProduk] = useState("");
   const [oldimage, setOldImage] = useState([]);
   const [idproduk, setIdProduk] = useState("");
+  const [isHaveQC, setHaveQC] = useState(false);
   // token for update product
   const [token, setToken] = useState("");
   const [validation, setValidation] = useState([]);
@@ -65,6 +66,8 @@ const UpdateProduct = () => {
     // get detail product, find by slug
     const res = await privateApi.get(`/product/detail/${slug}`);
     const data = await res.data.data;
+    // set have qc or no
+    data.qcProduct ? setHaveQC(true) : setHaveQC(false);
     // set idBrand for condition input select brand
     setIdBrand(data.varianProduk.id_merk);
     // set detail product
@@ -295,12 +298,20 @@ const UpdateProduct = () => {
               onChange={(e) => setStatusProduk(e.target.value)}
               value={statusproduk}
             >
-              <option value="BQC">Belum Quality Control</option>
-              <option value="PQC">Proses Quality Control</option>
-              <option value="SQC">Selesai Quality Control</option>
-              <option value="SJ">Siap Jual</option>
-              <option value="D">Denied</option>
-              <option value="T">Terjual</option>
+              {/* jika terdapat QC maka tampilkan SQC, SJ, D */}
+              {/* jika tidak terdapat QC maka tampilkan BQC, PQC */}
+              {isHaveQC ? (
+                <>
+                  <option value="SQC">Selesai Quality Control</option>
+                  <option value="SJ">Siap Jual</option>
+                  <option value="D">Denied</option>
+                </>
+              ) : (
+                <>
+                  <option value="BQC">Belum Quality Control</option>
+                  <option value="PQC">Proses Quality Control</option>
+                </>
+              )}
             </select>
           </div>
         </div>

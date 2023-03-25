@@ -17,9 +17,9 @@ const ViewProduct = () => {
   // modal updateQC
   const [showUpdate, setModalUpdate] = useState();
   // success status for create QC
-  const [isSuccess, setSuccess] = useState();
+  const [isSuccess, setSuccess] = useState(false);
   // success status for update QC
-  const [isUpdated, setUpdated] = useState();
+  const [isUpdated, setUpdated] = useState(false);
 
   const navigate = useNavigate();
   // get slug from params
@@ -60,6 +60,20 @@ const ViewProduct = () => {
         navigate("/");
       }
     }
+  };
+
+  const resetStatus = () => {
+    setSuccess(false);
+    setUpdated(false);
+  };
+
+  const addQCResult = () => {
+    resetStatus();
+    setShowModal(true);
+  };
+  const updateQCResult = () => {
+    resetStatus();
+    setModalUpdate(true);
   };
 
   return (
@@ -281,7 +295,7 @@ const ViewProduct = () => {
               Hasil Quality Control
             </label>
             {dataProduk && dataProduk.qcProduct === null ? (
-              <button onClick={() => setShowModal(true)}>
+              <button onClick={() => addQCResult()}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -298,7 +312,7 @@ const ViewProduct = () => {
                 </svg>
               </button>
             ) : (
-              <button onClick={() => setModalUpdate(true)}>
+              <button onClick={() => updateQCResult()}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"

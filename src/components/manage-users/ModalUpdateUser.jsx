@@ -91,7 +91,7 @@ export const ModalUpdateUser = ({ setShowUpdate, token, id, setUpdated }) => {
                       class="block w-full mt-1 rounded-md text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                       placeholder="Nama Admin"
                       required
-                      value={nama ? nama : "Loading..."}
+                      value={nama}
                       // defaultValue={oldData.nama}
                       onChange={(e) => setNama(e.target.value)}
                     />
@@ -103,7 +103,7 @@ export const ModalUpdateUser = ({ setShowUpdate, token, id, setUpdated }) => {
                       placeholder="Email Akses"
                       type="email"
                       required
-                      value={email ? email : "Loading..."}
+                      value={email}
                       // defaultValue={oldData.email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
