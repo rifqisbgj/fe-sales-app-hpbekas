@@ -67,7 +67,6 @@ const ListTransaction = () => {
     const res = await privateApi.get("/transaksi", {
       headers: { Authorization: token },
     });
-    console.log(res);
     // set state transaksi
     setDataTransaksi(res.data.data);
   };

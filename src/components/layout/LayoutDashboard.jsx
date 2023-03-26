@@ -32,25 +32,6 @@ const LayoutDashboard = ({ children }) => {
     navigate("/login");
   };
 
-  const refreshToken = async () => {
-    try {
-      // ambil token user
-      const response = await apiAdapter.get("/users/token", {
-        withCredentials: true,
-      });
-      // setToken
-      setToken(response.data.data.token);
-      // decode dari token yang sudah diambil
-      const decoded = jwtDecode(response.data.data.token);
-      // set expire token
-      setExpire(decoded.exp);
-    } catch (error) {
-      if (error.response) {
-        navigate("/");
-      }
-    }
-  };
-
   return (
     <div>
       {/* Layout */}

@@ -172,6 +172,33 @@ export const SideBarSuper = () => {
             <span class="ml-4">Transaksi</span>
           </NavLink>
         </li>
+        <li class="relative px-6 py-3">
+          <NavLink
+            className={(navData) =>
+              navData.isActive
+                ? "bg-gray-700 py-2 pl-2 rounded-md inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                : "inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+            }
+            to={"/dashboard/log"}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"
+              />
+            </svg>
+
+            <span class="ml-4">Log</span>
+          </NavLink>
+        </li>
       </ul>
     </div>
   );

@@ -6,6 +6,7 @@ import AlertSuccess from "../alert/AlertSuccess";
 import ModalCreateVarian from "./ModalCreateVarian";
 import ModalDeleteVarian from "./ModalDeleteVarian";
 import ModalUpdateVarian from "./ModalUpdateVarian";
+import jwtDecode from "jwt-decode";
 import ReactPaginate from "react-paginate";
 
 const ListVarians = () => {
@@ -72,7 +73,6 @@ const ListVarians = () => {
     async (config) => {
       const currentDate = new Date();
       // jika token expired, maka ambil kembali token yang baru
-
       if (expire * 1000 < currentDate.getTime()) {
         const res = await apiAdapter.get("/users/token", {
           withCredentials: true,

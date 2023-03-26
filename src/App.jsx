@@ -19,6 +19,7 @@ import Forbidden from "./pages/error-page/Forbidden";
 import ProtectedRoute from "./util/ProtectedRoute";
 import Redirect from "./util/Redirect";
 import Detail from "./pages/list-product/Detail";
+import DataLog from "./pages/auth/manage-log/DataLog";
 export default function App() {
   return (
     <BrowserRouter>
@@ -37,6 +38,7 @@ export default function App() {
         <Route element={<ProtectedRoute role={["super"]} />}>
           {/* Manage users */}
           <Route path="dashboard/users" element={<DataUsers />} />
+          <Route path="dashboard/log" element={<DataLog />} />
         </Route>
 
         {/* All roles can access: 
