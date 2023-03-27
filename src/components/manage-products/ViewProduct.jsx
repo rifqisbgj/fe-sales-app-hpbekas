@@ -267,9 +267,15 @@ const ViewProduct = () => {
             <p className="mt-1 font-medium">
               {dataProduk &&
               dataProduk.deskripsi !== "" &&
-              dataProduk.deskripsi !== null
-                ? dataProduk.deskripsi
-                : "-"}
+              dataProduk.deskripsi !== null ? (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: dataProduk.deskripsi,
+                  }}
+                />
+              ) : (
+                "-"
+              )}
             </p>
           </div>
           <hr class="h-px mt-6 bg-gray-200 border-0 dark:bg-gray-700"></hr>

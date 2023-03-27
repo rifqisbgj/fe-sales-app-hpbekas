@@ -28,7 +28,7 @@ export default function App() {
         <Route index element={<Home />} />
         {/* Selling list product */}
         <Route path="products" element={<ListProduct />} />
-        <Route path="products/:slug" element={<Detail />} />
+        <Route path="product/:slug" element={<Detail />} />
 
         {/* Auth */}
         <Route path="login" element={<Login />} />

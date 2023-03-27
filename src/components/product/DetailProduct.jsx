@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import privateApi from "../../api/privateApi";
 import MainNav from "../navbar/MainNav";
 import ImagesProduct from "./CompDetail/ImagesProduct";
 import RecommendByBrand from "./CompDetail/RecommendByBrand";
@@ -8,13 +9,58 @@ import SideBarInformation from "./CompDetail/SideBarInformation";
 
 const DetailProduct = () => {
   const [time, setTime] = useState(new Date().getHours());
+  const [dataProduk, setData] = useState([]);
+  // get slug from params
+  const { slug } = useParams();
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date().getHours());
     }, 2000);
+    getDetail();
 
     return () => clearInterval(interval);
   }, []);
+
+  // get fresh access token
+  const refreshToken = async () => {
+    try {
+      // ambil token user
+      const response = await apiAdapter.get("/users/token", {
+        withCredentials: true,
+      });
+      // setToken
+      return response.data.data.token;
+    } catch (error) {
+      if (error.response) {
+        navigate("/");
+      }
+    }
+  };
+
+  // get detail product
+  const detailProduct = async (token) => {
+    try {
+      // get detail product
+      const res = await privateApi.get(`/product/detail/${slug}`, {
+        headers: { Authorization: token },
+      });
+      const data = await res.data.data;
+      console.log(data);
+      setData(data);
+    } catch (error) {
+      if (error.response) {
+        navigate("/");
+      }
+    }
+  };
+
+  const getDetail = async () => {
+    // mengambil token terlebih dulu
+    await refreshToken().then((res) => {
+      // passing token ke detail product
+      detailProduct(res);
+    });
+  };
   return (
     <>
       <MainNav />
@@ -46,7 +92,9 @@ const DetailProduct = () => {
                   </svg>
                   <div className="flex flex-col w-full">
                     <label className="ml-4 text-sm">RAM</label>
-                    <label className="ml-4 font-bold text-lg">8 GB</label>
+                    <label className="ml-4 font-bold text-lg">
+                      {dataProduk.ram} GB
+                    </label>
                   </div>
                 </div>
                 <div className="flex flex-row justify-center items-center mt-2">
@@ -70,7 +118,9 @@ const DetailProduct = () => {
                   </svg>
                   <div className="flex flex-col w-full">
                     <label className="ml-4 text-sm">Storage</label>
-                    <label className="ml-4 font-bold text-lg">256 GB</label>
+                    <label className="ml-4 font-bold text-lg">
+                      {dataProduk.storage} GB
+                    </label>
                   </div>
                 </div>
                 <div className="flex flex-row justify-center items-center mt-2">
@@ -86,7 +136,9 @@ const DetailProduct = () => {
                   </svg>
                   <div className="flex flex-col w-full">
                     <label className="ml-4 text-sm">Warna</label>
-                    <label className="ml-4 font-bold text-lg">Merah</label>
+                    <label className="ml-4 font-bold text-lg">
+                      {dataProduk.warna}
+                    </label>
                   </div>
                 </div>
               </div>
@@ -94,23 +146,12 @@ const DetailProduct = () => {
             <div className="flex flex-col border border-gray-200 p-4 mt-5 col-span-2 rounded-lg text-gray-600">
               <label className="font-semibold text-2xl pb-3">Deskripsi</label>
               <hr />
-              <p className="mt-4">
-                Model: A532 CPU: MTK6889 12 core Sistem: Android 11 Memori: RAM
-                12GB + ROM 512GB Jenis layar: layar penuh 7.5 inci Layar
-                sentuh/Layar Sentuh: mendukung kapasitansi Resolusi layar:
-                3344*2280 Baterai: 5000mAH Jaringan: 3G/4G/5G SIM: Kartu SIM
-                ganda + kartu T-flash Piksel kamera:Kamera Depan : 24.0 MP.
-                Kamera belakang: 48,0 MP Fitur terbaru: Pengenalan wajah/buka
-                kunci sidik jari Fitur produk tambahan: GPS: Ya, WiFi: mendukung
-                nirkabel 802.11 b/g/n, mendukung hotspot Bluetooth: Mendukung
-                Bluetooth 4.0 Informasi: MMS, SMS, Email, Gmail Port keluaran
-                audio: 3.5mm Port USB: 5mm Multifunsi: Perekam video, pemutar
-                audio, tape recorder, radio FM, email, Gmail, senter, Anda juga
-                bisa download aplikasi lain, dll Bahasa: Indonesia Paket Isi : 1
-                x Ponsel pintar 1 x Kepala Charger / colokan pengisi daya 1 x
-                Kabel Charger 1 x 3.5mm earphone 1 x Panduan Pengguna 1 x Anti
-                gores/pelindung layar 1 x Casing hp
-              </p>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: dataProduk.deskripsi,
+                }}
+                className="mt-4"
+              />
             </div>
           </div>
           <SideBarInformation time={time} />

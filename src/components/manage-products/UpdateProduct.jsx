@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 import AlertFailed from "../alert/AlertFailed";
-import LayoutDashboard from "../layout/LayoutDashboard";
+import ReactQuill from "react-quill";
+import "../../../node_modules/react-quill/dist/quill.snow.css";
 import ChangeImages from "./ChangeImages";
 
 const UpdateProduct = () => {
@@ -35,6 +36,31 @@ const UpdateProduct = () => {
   const navigate = useNavigate();
   // get slug from params
   const { slug } = useParams();
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+  ];
 
   useEffect(() => {
     // get attribute product, include varian
@@ -189,14 +215,16 @@ const UpdateProduct = () => {
             <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2">
               Deskripsi
             </label>
-            <textarea
-              className="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-              id="grid-password"
-              type="password"
-              onChange={(e) => setDeskripsi(e.target.value)}
-            >
-              {deskripsi}
-            </textarea>
+            <div className="text-white">
+              <ReactQuill
+                placeholder="Tulis deskripsi produk"
+                modules={modules}
+                formats={formats}
+                theme={"snow"}
+                onChange={(e) => setDeskripsi(e)}
+                value={deskripsi}
+              />
+            </div>
           </div>
         </div>
         <div className="-mx-3 md:flex mb-2">

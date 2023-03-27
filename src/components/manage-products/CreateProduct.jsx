@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 import AlertFailed from "../alert/AlertFailed";
+import ReactQuill from "react-quill";
+import "../../../node_modules/react-quill/dist/quill.snow.css";
 
 const CreateProduct = () => {
   // state produk attribute
@@ -34,6 +36,32 @@ const CreateProduct = () => {
     getBrand();
     refreshToken();
   }, [allVarian, navigate]);
+
+  // MODULES DAN FORMAT UNTUK EDITOR WYSIWYG
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+  ];
 
   // get fresh access token
   const refreshToken = async () => {
@@ -220,11 +248,16 @@ const CreateProduct = () => {
               >
                 Deskripsi
               </label>
-              <textarea
-                class="block w-full rounded-md mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                id="grid-password"
-                onChange={(e) => setDeskripsi(e.target.value)}
-              ></textarea>
+              <div className="text-white">
+                <ReactQuill
+                  placeholder="Tulis deskripsi produk"
+                  modules={modules}
+                  formats={formats}
+                  theme={"snow"}
+                  onChange={(e) => setDeskripsi(e)}
+                  value={deskripsi}
+                />
+              </div>
             </div>
           </div>
           <div class="-mx-3 md:flex mb-2">

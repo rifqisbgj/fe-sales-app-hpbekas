@@ -5,6 +5,7 @@ import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 import ReactPaginate from "react-paginate";
 import Datepicker from "react-tailwindcss-datepicker";
+import moment from "moment/moment";
 
 const ListLog = () => {
   // token access for header Authorization
@@ -115,7 +116,7 @@ const ListLog = () => {
   return (
     <div class="container grid px-6 mx-auto">
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-        Data Log Website BagjaGadget
+        Data Log Website
       </h2>
       <form>
         <div class="-mx-3 md:flex mb-2">
@@ -139,7 +140,7 @@ const ListLog = () => {
               <option value="DELETE">DELETE</option>
             </select>
           </div>
-          <div class="md:w-1/3 px-3">
+          <div class="md:w-1/3 px-3 mb-6 md:mb-0">
             <label
               for="countries"
               class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
@@ -159,7 +160,7 @@ const ListLog = () => {
               <option value="error">ERROR</option>
             </select>
           </div>
-          <div class="md:w-1/3 px-3">
+          <div class="md:w-1/3 px-3 mb-6 md:mb-0">
             <label
               for="countries"
               class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
@@ -170,8 +171,10 @@ const ListLog = () => {
               value={value}
               inputClassName="bg-gray-50"
               onChange={handleValueDateRange}
-              minDate={new Date("2023-03-19")}
-              maxDate={new Date("2023-03-26")}
+              // mengambil tanggal seminggu yang lalu
+              minDate={moment().subtract(7, "d").format("YYYY-MM-DD")}
+              // mengambil tanggal saat ini
+              maxDate={moment().format("YYYY-MM-DD")}
               useRange={false}
             />
           </div>
