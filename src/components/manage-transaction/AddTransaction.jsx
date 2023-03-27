@@ -145,7 +145,7 @@ const AddTransaction = () => {
     setProduk([]);
 
     // get data product by keyword
-    const res = await apiAdapter.get(`/product/${keyword}`);
+    const res = await apiAdapter.get(`/product/find/${keyword}`);
     // if exist -> set product || doesn't exist -> setNotFound
     res.data.data.length !== 0 ? setProduk(res.data.data) : setNotFound(true);
   };

@@ -1,26 +1,74 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const SideBarInformation = ({ time }) => {
+const SideBarInformation = ({ time, harga, varian, merek, qc }) => {
   return (
     <div className="flex flex-col sticky h-max top-20">
       {/* Informasi Singkat Produk */}
       <div className="p-4 border border-gray-200 rounded-md">
         <div className="flex flex-row mt-2">
           <h1 className="bg-primary px-2 rounded-md text-lg text-white">
-            Samsung
+            {merek}
           </h1>
         </div>
         <h1 className="text-lg font-bold tracking-tight text-gray-900 md:text-3xl pt-3">
-          Samsung A52S
+          {varian}
         </h1>
         <div className="pb-4">
           <h1 className="py-4 px-4 mt-3 text-lg font-bold tracking-tight bg-slate-100 text-primary rounded-md md:text-2xl">
-            Rp 6.000.000
+            Rp {harga.toLocaleString()}
           </h1>
         </div>
       </div>
-      <div className="mt-6 p-4 border border-gray-200 rounded-md">
+      <div className="mt-4 p-4 border border-gray-200 rounded-md">
+        <h1 className="text-lg font-bold tracking-tight text-gray-900 md:text-xl pt-3">
+          Hasil Quality Control
+        </h1>
+        <div class="relative overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-gray-700 uppercase ">
+              <tr>
+                <th scope="col" class="py-3">
+                  Item Pengecekan
+                </th>
+                <th scope="col" class="py-3">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bg-white border-b">
+                <th
+                  scope="row"
+                  class="font-medium text-gray-900 whitespace-nowrap"
+                >
+                  Baterai
+                </th>
+                <td class="px-6 py-4">{qc.batre ? "✔️" : "❌"}</td>
+              </tr>
+              <tr class="bg-white border-b">
+                <th
+                  scope="row"
+                  class="font-medium text-gray-900 whitespace-nowrap"
+                >
+                  Layar
+                </th>
+                <td class="px-6 py-4">{qc.layar ? "✔️" : "❌"}</td>
+              </tr>
+              <tr class="bg-white">
+                <th
+                  scope="row"
+                  class="font-medium text-gray-900 whitespace-nowrap"
+                >
+                  Sinyal
+                </th>
+                <td class="px-6 py-4">{qc.sinyal ? "✔️" : "❌"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="mt-4 p-4 border border-gray-200 rounded-md">
         <h1 className="text-lg font-bold tracking-tight text-gray-900 md:text-xl pt-3">
           BagjaCell
         </h1>
@@ -37,7 +85,6 @@ const SideBarInformation = ({ time }) => {
               Sekarang Buka
             </label>
           )}
-
           <div className="flex flex-row py-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +104,6 @@ const SideBarInformation = ({ time }) => {
               07.00 - 20.00 | Senin - Minggu
             </label>
           </div>
-
           <Link
             to={
               "https://www.google.com/maps/place/SMAN+19+GARUT/@-7.2694851,107.7791156,13z/data=!4m17!1m10!4m9!1m1!4e2!1m6!1m2!1s0x2e68a521b61b7809:0x6dd594f1735b6a52!2sSMAN+19+GARUT,+Jalan+Raya+Simpang+-+Samarang,+Mulyasari,+Kabupaten+Garut,+Jawa+Barat!2m2!1d107.8141353!2d-7.2695716!3m5!1s0x2e68a521b61b7809:0x6dd594f1735b6a52!8m2!3d-7.2695716!4d107.8141353!16s%2Fg%2F11f334yy9f"

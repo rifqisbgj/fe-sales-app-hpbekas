@@ -11,6 +11,8 @@ const ModalDeleteProduct = ({
   isQc,
   setCodeDelete,
   codeDelete,
+  isActive,
+  setActive,
 }) => {
   //   delete from db
   const deleteProduct = async () => {
@@ -40,6 +42,7 @@ const ModalDeleteProduct = ({
       setCodeDelete("");
       //   set status qc product
       setQcStatus(false);
+      setActive(false);
     } catch (error) {
       // jika hapus tidak berhasil
       if (error.response) {
@@ -70,8 +73,13 @@ const ModalDeleteProduct = ({
             <div className="relative p-6 flex-auto">
               <p className="text-white">
                 {isQc ? "Produk memiliki hasil Quality Control. " : ""} Anda
-                yakin akan {isQc ? "menon-aktifkan" : "menghapus"} data produk
-                dengan kode: {codeDelete}?
+                yakin akan{" "}
+                {isQc
+                  ? isActive
+                    ? "menon-aktifkan"
+                    : "mengaktifkan"
+                  : "menghapus"}{" "}
+                data produk dengan kode: {codeDelete}?
               </p>
             </div>
             {/*footer*/}
@@ -88,7 +96,7 @@ const ModalDeleteProduct = ({
                 type="button"
                 onClick={() => deleteProduct()}
               >
-                Delete
+                {isQc ? (isActive ? "Non-Aktifkan" : "Aktifkan") : "Delete"}
               </button>
             </div>
           </div>

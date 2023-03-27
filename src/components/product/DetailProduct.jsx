@@ -10,6 +10,7 @@ import SideBarInformation from "./CompDetail/SideBarInformation";
 const DetailProduct = () => {
   const [time, setTime] = useState(new Date().getHours());
   const [dataProduk, setData] = useState([]);
+  const [dataProdukByBrand, setDataByBrand] = useState([]);
   // get slug from params
   const { slug } = useParams();
   useEffect(() => {
@@ -45,8 +46,14 @@ const DetailProduct = () => {
         headers: { Authorization: token },
       });
       const data = await res.data.data;
-      console.log(data);
       setData(data);
+
+      // get data by brand
+      const resDataBrand = await privateApi.get(
+        `/product?limit=5&brand=${data.varianProduk.merk.id}`
+      );
+      const dataByBrand = await resDataBrand.data.data;
+      setDataByBrand(dataByBrand);
     } catch (error) {
       if (error.response) {
         navigate("/");
@@ -61,13 +68,17 @@ const DetailProduct = () => {
       detailProduct(res);
     });
   };
+
   return (
     <>
       <MainNav />
       <div class="max-w-7xl py-4 mx-auto px-4 sm:px-6 lg:px-8 mt-2">
         <div className="grid grid-cols-1 mt-4 md:grid-cols-3 gap-y-5 md:gap-4">
           <div className="col-span-2">
-            <ImagesProduct />
+            {dataProduk.gambarProduk && (
+              <ImagesProduct dataImages={dataProduk.gambarProduk} />
+            )}
+
             <div className="flex flex-col border border-gray-200 p-4 mt-10 col-span-2 rounded-lg text-gray-600">
               <label className="font-semibold text-2xl pb-3">
                 Spesifikasi Singkat
@@ -154,9 +165,23 @@ const DetailProduct = () => {
               />
             </div>
           </div>
-          <SideBarInformation time={time} />
+          {dataProduk.varianProduk && (
+            <SideBarInformation
+              time={time}
+              harga={dataProduk.harga}
+              varian={dataProduk.varianProduk.namavarian}
+              merek={dataProduk.varianProduk.merk.namamerek}
+              qc={dataProduk.qcProduct}
+            />
+          )}
         </div>
-        <RecommendByBrand />
+        {dataProdukByBrand.length !== 0 && (
+          <RecommendByBrand
+            dataProdukByBrand={dataProdukByBrand}
+            current={dataProduk.id}
+          />
+        )}
+
         <RecommendByNewest />
       </div>
     </>
