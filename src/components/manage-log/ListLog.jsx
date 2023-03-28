@@ -41,6 +41,7 @@ const ListLog = () => {
 
   // value change date
   const handleValueDateRange = (newValue) => {
+    setPage(0);
     if (newValue.startDate === null && newValue.endDate === null) {
       return setValue({ startDate: "", endDate: "" });
     }
@@ -113,6 +114,16 @@ const ListLog = () => {
       setMsg("");
     }
   };
+
+  const filterLevel = (e) => {
+    setPage(0);
+    setLevel(e);
+  };
+
+  const filterMethod = (e) => {
+    setPage(0);
+    setMethod(e);
+  };
   return (
     <div class="container grid px-6 mx-auto">
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
@@ -130,7 +141,7 @@ const ListLog = () => {
             <select
               id="countries"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              onChange={(e) => setMethod(e.target.value)}
+              onChange={(e) => filterMethod(e.target.value)}
             >
               <option value="" selected>
                 All Method
@@ -150,7 +161,7 @@ const ListLog = () => {
             <select
               id="countries"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              onChange={(e) => setLevel(e.target.value)}
+              onChange={(e) => filterLevel(e.target.value)}
             >
               <option value="" selected>
                 All Level

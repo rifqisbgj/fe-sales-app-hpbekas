@@ -150,6 +150,7 @@ const ListProduct = () => {
   };
 
   const handleRangePrice = () => {
+    setPage(0);
     reset();
     setMinPrice(minRef.current.value);
     setMaxPrice(maxRef.current.value);
@@ -161,6 +162,19 @@ const ListProduct = () => {
       return setMsg("Harga maksimum harus lebih besar dari harga minimum.");
     }
     setMsg("");
+  };
+
+  const cariProduk = (e) => {
+    setPage(0);
+    setKeyword(e);
+  };
+  const filterStatusProduk = (e) => {
+    setPage(0);
+    setStatus(e);
+  };
+  const filterStatusAktif = (e) => {
+    setPage(0);
+    setFilterActive(e);
   };
   return (
     <div class="container grid px-6 mx-auto">
@@ -204,8 +218,8 @@ const ListProduct = () => {
               <input
                 type="text"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Cari kode produk atau varian"
-                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="Kode produk, nama varian, atau IMEI"
+                onChange={(e) => cariProduk(e.target.value)}
               />
             </div>
             <div class="md:w-1/3 px-3 mb-6 md:mb-0">
@@ -218,7 +232,7 @@ const ListProduct = () => {
               <select
                 id="countries"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                onChange={(e) => setStatus(e.target.value)}
+                onChange={(e) => filterStatusProduk(e.target.value)}
               >
                 <option value="" selected>
                   Semua Status Produk
@@ -241,7 +255,7 @@ const ListProduct = () => {
               <select
                 id="countries"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                onChange={(e) => setFilterActive(e.target.value)}
+                onChange={(e) => filterStatusAktif(e.target.value)}
               >
                 <option value="" selected>
                   Produk Status Aktif & Tidak Aktif

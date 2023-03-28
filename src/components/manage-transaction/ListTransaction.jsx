@@ -108,6 +108,7 @@ const ListTransaction = () => {
 
   // value change date
   const handleValueDateRange = (newValue) => {
+    setPage(0);
     if (newValue.startDate === null && newValue.endDate === null) {
       return setValue({ startDate: "", endDate: "" });
     }
@@ -121,14 +122,14 @@ const ListTransaction = () => {
       </h2>
 
       <form>
-        <div class="-mx-3 md:flex mb-2">
+        <div class="flex justify-between">
+          <button
+            onClick={() => navigate("/dashboard/transaksi/create")}
+            class="px-4 py-2 mb-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+          >
+            Tambah Transaksi
+          </button>
           <div class="md:w-1/3 px-3 mb-6 md:mb-0">
-            <button
-              onClick={() => navigate("/dashboard/transaksi/create")}
-              class="px-4 py-2 mb-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-            >
-              Tambah Transaksi
-            </button>
             <Datepicker
               value={value}
               inputClassName="bg-gray-50"

@@ -87,6 +87,10 @@ const ListQC = () => {
     setKodeQC(kode);
     setShowDelete(true);
   };
+
+  const cariQC = (e) => {
+    console.log();
+  };
   return (
     <div class="container grid px-6 mx-auto">
       {showDelete && (
@@ -101,7 +105,24 @@ const ListQC = () => {
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
         Data Hasil Quality Control
       </h2>
-
+      <form>
+        <div class="-mx-3 md:flex mb-2">
+          <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+            <label
+              for="countries"
+              class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+            >
+              Cari Hasil Quality Control
+            </label>
+            <input
+              type="text"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Kode QC, kode produk, IMEI"
+              onChange={(e) => cariQC(e.target.value)}
+            />
+          </div>
+        </div>
+      </form>
       {isDeleted && (
         <AlertSuccess
           msg={`Berhasil menghapus hasil Quality Control dengan kode ${kodeQC}`}

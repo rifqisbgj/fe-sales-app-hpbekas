@@ -40,6 +40,7 @@ const ListVarians = () => {
   const [isDelete, setIsDelete] = useState(false);
   const [idVarian, setIdVarian] = useState("");
   const [namaVarian, setNamaVarian] = useState("");
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     // jalankan refresh token untuk mengambil token dan expired
@@ -102,6 +103,7 @@ const ListVarians = () => {
     setPage(response.data.page);
     setPages(response.data.totalPage);
     setRows(response.data.totalRows);
+    setLoading(false);
   };
 
   const changePage = ({ selected }) => {
@@ -144,6 +146,11 @@ const ListVarians = () => {
     setIdVarian("");
   };
 
+  const cariVarian = (e) => {
+    setPage(0);
+    setKeyword(e);
+  };
+
   return (
     <div class="container grid px-6 mx-auto">
       {showModal && (
@@ -175,61 +182,29 @@ const ListVarians = () => {
       </h2>
 
       <div class="w-full overflow-hidden rounded-lg shadow-xs">
-        <button
-          class="px-4 py-2 mb-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-          onClick={() => createVarian()}
-        >
-          Tambah Varian
-        </button>
+        <form>
+          <div class="flex justify-between">
+            <button
+              class="px-4 py-2 mb-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+              onClick={() => createVarian()}
+            >
+              Tambah Varian
+            </button>
+            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+              <input
+                type="text"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Masukan nama varian"
+                onChange={(e) => cariVarian(e.target.value)}
+              />
+            </div>
+          </div>
+        </form>
         {isSuccess && <AlertSuccess msg="Varian berhasil ditambahkan" />}
         {isUpdate && <AlertSuccess msg="Varian berhasil diperbarui" />}
         {isDelete && (
           <AlertSuccess msg={`Varian ${namaVarian} berhasil dihapus`} />
         )}
-
-        <div className="grid grid-cols-2 mb-3">
-          <form>
-            <label
-              for="default-search"
-              class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-            >
-              Search
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg
-                  aria-hidden="true"
-                  class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  ></path>
-                </svg>
-              </div>
-              <input
-                type="search"
-                id="default-search"
-                class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Search Varian."
-                required
-              />
-              <button
-                type="submit"
-                class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Search
-              </button>
-            </div>
-          </form>
-        </div>
-
         <div class="w-full overflow-x-auto rounded-md">
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
@@ -241,6 +216,26 @@ const ListVarians = () => {
               </tr>
             </thead>
             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+              {!isLoading && varians.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="text-center text-gray-400 py-3 font-medium"
+                  >
+                    Ups... Data varian tidak tersedia, ubah filter data mu
+                  </td>
+                </tr>
+              )}
+              {isLoading && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="text-center text-gray-400 py-3 font-medium"
+                  >
+                    Loading ...
+                  </td>
+                </tr>
+              )}
               {varians.map((varian, indx) => (
                 <tr class="text-gray-700 dark:text-gray-400" key={indx}>
                   <td class="px-4 py-3 text-sm">{varian.merk.namamerek}</td>
