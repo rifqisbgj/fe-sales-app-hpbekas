@@ -1,11 +1,13 @@
 import jwtDecode from "jwt-decode";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 import AlertSuccess from "../alert/AlertSuccess";
 import ModalDeleteProduct from "./ModalDeleteProduct";
 import ReactPaginate from "react-paginate";
+
+import AlertFilterPrice from "../alert/AlertFilterPrice";
 
 const ListProduct = () => {
   const navigate = useNavigate();
@@ -32,8 +34,18 @@ const ListProduct = () => {
   const [pages, setPages] = useState(0);
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState("");
-  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("");
+  const [active, setFilterActive] = useState("");
+  // list brand
+  const [listBrand, setListBrand] = useState([]);
+  const [maxPrice, setMaxPrice] = useState();
+  const [minPrice, setMinPrice] = useState();
+
+  const minRef = useRef(null);
+  const maxRef = useRef(null);
+
   const [message, setMsg] = useState("");
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(
     () => {
@@ -42,7 +54,7 @@ const ListProduct = () => {
       // mengambil data produk
       getProducts();
     }, // data akan direfresh jika status success berubah
-    [isScsDelete, page]
+    [isScsDelete, page, keyword, status, active, maxPrice, minPrice]
   );
 
   const refreshToken = async () => {
@@ -88,7 +100,7 @@ const ListProduct = () => {
 
   const getProducts = async () => {
     const res = await privateApi.get(
-      `/product/list?search_query=${keyword}&page=${page}&limit=${limit}`,
+      `/product/list?search_query=${keyword}&page=${page}&limit=${limit}&status=${status}&active=${active}&minPrice=${minPrice}&maxPrice=${maxPrice}`,
       {
         headers: { Authorization: token },
       }
@@ -98,6 +110,13 @@ const ListProduct = () => {
     setPage(res.data.page);
     setPages(res.data.totalPage);
     setRows(res.data.totalRows);
+
+    const resBrand = await privateApi.get("/brand", {
+      headers: { Authorization: token },
+    });
+
+    setListBrand(resBrand.data.data);
+    setLoading(false);
   };
 
   const changePage = ({ selected }) => {
@@ -122,10 +141,27 @@ const ListProduct = () => {
     active ? setActive(true) : setActive(false);
     // jika produk memiliki qc
     qcstatus != null ? setQcStatus(true) : setQcStatus(false);
+    reset();
+  };
+  const reset = () => {
     // reset status aksi sebelumnya
     setSczDelete(false);
+    setMsg("");
   };
 
+  const handleRangePrice = () => {
+    reset();
+    setMinPrice(minRef.current.value);
+    setMaxPrice(maxRef.current.value);
+    // validasi harga minimun harus lebih rendah dari harga max
+    if (
+      minRef.current.value >= maxRef.current.value &&
+      maxRef.current.value !== ""
+    ) {
+      return setMsg("Harga maksimum harus lebih besar dari harga minimum.");
+    }
+    setMsg("");
+  };
   return (
     <div class="container grid px-6 mx-auto">
       {/* modal delete product */}
@@ -155,11 +191,128 @@ const ListProduct = () => {
         >
           Tambah Produk
         </button>
+
+        <form>
+          <div class="-mx-3 md:flex mb-2">
+            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Cari Produk
+              </label>
+              <input
+                type="text"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Cari kode produk atau varian"
+                onChange={(e) => setKeyword(e.target.value)}
+              />
+            </div>
+            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Filter Berdasarkan Status Produk
+              </label>
+              <select
+                id="countries"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="" selected>
+                  Semua Status Produk
+                </option>
+                <option value="BQC">Belum Quality Control (BQC)</option>
+                <option value="PQC">Proses Quality Control (PQC)</option>
+                <option value="SQC">Selesai Quality Control (SQC)</option>
+                <option value="SJ">Siap Jual (SJ)</option>
+                <option value="D">Denied (D)</option>
+                <option value="T">Terjual (T)</option>
+              </select>
+            </div>
+            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Filter Berdasarkan Produk Aktif/Tidak
+              </label>
+              <select
+                id="countries"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                onChange={(e) => setFilterActive(e.target.value)}
+              >
+                <option value="" selected>
+                  Produk Status Aktif & Tidak Aktif
+                </option>
+                <option value={true}>Aktif</option>
+                <option value={false}>Tidak Aktif</option>
+              </select>
+            </div>
+          </div>
+          <div class="-mx-3 md:flex mb-2">
+            {/* <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Filter Merek Produk
+              </label>
+              <select
+                id="countries"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                onChange={(e) => setFilterActive(e.target.value)}
+              >
+                <option value="" selected>
+                  Semua Merek
+                </option>
+                {listBrand &&
+                  listBrand.map((br) => (
+                    <option value={br.id}>{br.namamerek}</option>
+                  ))}
+              </select>
+            </div> */}
+            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Filter Berdasarkan Harga
+              </label>
+              <div className="flex flex-row gap-2">
+                <input
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Harga Minimum"
+                  type="text"
+                  name="minPrice"
+                  id="minPrice"
+                  defaultValue={minPrice}
+                  onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+                  onBlur={handleRangePrice}
+                  ref={minRef}
+                />{" "}
+                <input
+                  type="text"
+                  name="maxPrice"
+                  id="maxPrice"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Harga Maksimum"
+                  defaultValue={maxPrice}
+                  onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+                  onBlur={handleRangePrice}
+                  ref={maxRef}
+                />
+              </div>
+            </div>
+          </div>
+        </form>
         {/* Notif jika berhasil membuat atau menghapus data */}
         {isScsDelete && (
           <AlertSuccess msg="Berhasil menghapus atau memperbarui status aktif produk" />
         )}
-        <div class="w-full overflow-x-auto rounded-md">
+        {message && <AlertFilterPrice errPriceMsg={message} status={"admin"} />}
+        <div class="w-full overflow-x-auto rounded-md mt-2">
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
@@ -172,6 +325,26 @@ const ListProduct = () => {
               </tr>
             </thead>
             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+              {!isLoading && dataProducts.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="text-center text-gray-400 py-3 font-medium"
+                  >
+                    Ups... Data Produk tidak tersedia, ubah filter data mu
+                  </td>
+                </tr>
+              )}
+              {isLoading && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="text-center text-gray-400 py-3 font-medium"
+                  >
+                    Loading ...
+                  </td>
+                </tr>
+              )}
               {dataProducts.map((produk, indx) => (
                 <tr class="text-gray-700 dark:text-gray-400" key={indx}>
                   <td class="px-4 py-3 text-sm">{indx + 1}</td>

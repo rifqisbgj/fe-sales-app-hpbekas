@@ -1,4 +1,4 @@
-const AlertFilterPrice = ({ errPriceMsg }) => {
+const AlertFilterPrice = ({ errPriceMsg, status }) => {
   if (errPriceMsg !== "") {
     return (
       <div
@@ -20,7 +20,9 @@ const AlertFilterPrice = ({ errPriceMsg }) => {
           />
         </svg>
 
-        <p className="pl-3">{errPriceMsg}</p>
+        <p className={`pl-3 ${status === "admin" ? "text-white" : ""}`}>
+          {errPriceMsg}
+        </p>
       </div>
     );
   }
