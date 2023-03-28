@@ -15,7 +15,7 @@ const ImagesProduct = ({ dataImages }) => {
         />
       </div>
       <div className="flex flex-row mt-2 md:justify-center">
-        {dataImages.map((d) => (
+        {dataImages.map((d, i) => (
           <div
             className={`pr-2 cursor-pointer ${
               d.image === selected
@@ -23,6 +23,7 @@ const ImagesProduct = ({ dataImages }) => {
                 : ""
             }`}
             onClick={() => setSelected(d.image)}
+            key={i}
           >
             <img
               src={import.meta.env.VITE_BASE_URL + "/product-image/" + d.image}

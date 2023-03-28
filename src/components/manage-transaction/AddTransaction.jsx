@@ -96,11 +96,16 @@ const AddTransaction = () => {
 
   // store transaction to db
   const storeTransaction = async (idcus) => {
+    const total = dataCheckout.reduce(
+      (total, currentItem) => (total = total + currentItem.harga),
+      0
+    );
     const transaksi = await privateApi.post(
       "/transaksi/store",
       {
         idCustomer: idcus,
         detail: dataCheckout,
+        total,
       },
       { headers: { Authorization: token } }
     );
@@ -210,8 +215,11 @@ const AddTransaction = () => {
         {/* Jika data produk yang dicari tersedia */}
         {dataProduk && dataProduk.length !== 0 && (
           <div className="grid grid-cols-2 gap-x-6 gap-y-5 px-1 lg:mt-5 lg:grid-cols-5 lg:gap-x-4">
-            {dataProduk.map((d) => (
-              <article class="relative rounded-xl bg-gray-700 p-3 shadow-lg hover:shadow-xl">
+            {dataProduk.map((d, i) => (
+              <article
+                class="relative rounded-xl bg-gray-700 p-3 shadow-lg hover:shadow-xl"
+                key={i}
+              >
                 <img
                   className="transition ease-in-out delay-150 duration-300 h-44 w-full object-cover rounded"
                   src={
@@ -361,6 +369,10 @@ const AddTransaction = () => {
                     class="block w-full mt-2 rounded-md text-sm border-gray-400 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple text-white dark:focus:shadow-outline-gray form-input"
                     placeholder="No Telp Customer"
                     required
+                    onKeyPress={(e) =>
+                      !/[0-9]/.test(e.key) && e.preventDefault()
+                    }
+                    maxlength="13"
                     onChange={(e) => setNotelpCus(e.target.value)}
                   />
                 </div>

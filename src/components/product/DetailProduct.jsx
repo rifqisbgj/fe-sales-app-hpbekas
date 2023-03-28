@@ -53,7 +53,7 @@ const DetailProduct = () => {
         `/product?limit=5&brand=${data.varianProduk.merk.id}`
       );
       const dataByBrand = await resDataBrand.data.data;
-      setDataByBrand(dataByBrand);
+      setDataByBrand(dataByBrand.filter((e) => e.id !== data.id));
     } catch (error) {
       if (error.response) {
         navigate("/");

@@ -7,6 +7,7 @@ import AlertSuccess from "../alert/AlertSuccess";
 import moment from "moment";
 import ModalCreateQC from "../manage-qc/ModalCreateQC";
 import ModalUpdateQC from "../manage-qc/ModalUpdateQC";
+import { useSelector } from "react-redux";
 
 const ViewProduct = () => {
   const [token, setToken] = useState();
@@ -20,6 +21,7 @@ const ViewProduct = () => {
   const [isSuccess, setSuccess] = useState(false);
   // success status for update QC
   const [isUpdated, setUpdated] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   // get slug from params
@@ -287,7 +289,9 @@ const ViewProduct = () => {
                     <img
                       className="rounded-lg shadow-xl hover:shadow-2xl h-44 w-full object-cover"
                       src={
-                        "http://localhost:8080/product-image/" + imgproduk.image
+                        import.meta.env.VITE_BASE_URL +
+                        "/product-image/" +
+                        imgproduk.image
                       }
                     />
                   </figure>
@@ -300,7 +304,9 @@ const ViewProduct = () => {
             <label className="text-xl text-gray-300 py-5">
               Hasil Quality Control
             </label>
-            {dataProduk && dataProduk.statusproduk !== "T" ? (
+            {dataProduk &&
+            ((dataProduk.statusproduk !== "T" && user.data.role === "super") ||
+              user.data.role === "adminQC") ? (
               dataProduk.qcProduct === null ? (
                 <button onClick={() => addQCResult()}>
                   <svg
