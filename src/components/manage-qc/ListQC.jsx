@@ -5,6 +5,9 @@ import apiAdapter from "../../api/apiAdapter";
 import privateApi from "../../api/privateApi";
 import AlertSuccess from "../alert/AlertSuccess";
 import ModalDeleteQC from "./ModalDeleteQC";
+import Datepicker from "react-tailwindcss-datepicker";
+import ReactPaginate from "react-paginate";
+import jwtDecode from "jwt-decode";
 
 const ListQC = () => {
   // token access for header Authorization
@@ -19,12 +22,25 @@ const ListQC = () => {
   const [showDelete, setShowDelete] = useState(false);
   const [isDeleted, setSczDelete] = useState(false);
 
+  // set value date range
+  const [value, setValue] = useState({
+    startDate: "",
+    endDate: "",
+  });
+
+  // pagination
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [pages, setPages] = useState(0);
+  const [rows, setRows] = useState(0);
+  const [keyword, setKeyword] = useState("");
+
   useEffect(() => {
     // jalankan refresh token untuk mengambil token dan expired
     refreshToken();
     // mengambil data QC
     getQCResult();
-  }, [isDeleted]);
+  }, [isDeleted, keyword, page, value]);
 
   //   refresh token for access route
   const refreshToken = async () => {
@@ -70,12 +86,17 @@ const ListQC = () => {
 
   //   get all qc result
   const getQCResult = async () => {
-    const res = await privateApi.get("/qc", {
-      headers: { Authorization: token },
-    });
-    console.log(res.data.data);
+    const res = await privateApi.get(
+      `/qc?search_query=${keyword}&page=${page}&limit=${limit}&dateOne=${value.startDate}&dateTwo=${value.endDate}`,
+      {
+        headers: { Authorization: token },
+      }
+    );
     // set state qc
     setQC(res.data.data);
+    setPage(res.data.page);
+    setPages(res.data.totalPage);
+    setRows(res.data.totalRows);
   };
 
   const deleteQC = (id, kode) => {
@@ -89,7 +110,29 @@ const ListQC = () => {
   };
 
   const cariQC = (e) => {
-    console.log();
+    setPage(0);
+    setKeyword(e);
+  };
+
+  // change page pagination
+  const changePage = ({ selected }) => {
+    setPage(selected);
+    if (selected === 9) {
+      setMsg(
+        "Jika tidak menemukan data yang Anda cari, silahkan cari data dengan kata kunci spesifik!"
+      );
+    } else {
+      setMsg("");
+    }
+  };
+
+  // value change date
+  const handleValueDateRange = (newValue) => {
+    setPage(0);
+    if (newValue.startDate === null && newValue.endDate === null) {
+      return setValue({ startDate: "", endDate: "" });
+    }
+    setValue(newValue);
   };
   return (
     <div class="container grid px-6 mx-auto">
@@ -119,6 +162,22 @@ const ListQC = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Kode QC, kode produk, IMEI"
               onChange={(e) => cariQC(e.target.value)}
+            />
+          </div>
+          <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+            <label
+              for="countries"
+              class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+            >
+              Filter tanggal Quality Control
+            </label>
+            <Datepicker
+              value={value}
+              inputClassName="bg-gray-50"
+              onChange={handleValueDateRange}
+              // mengambil tanggal saat ini
+              maxDate={moment().format("YYYY-MM-DD")}
+              useRange={false}
             />
           </div>
         </div>
@@ -214,6 +273,45 @@ const ListQC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div
+          className="flex items-center justify-between border-t border-gray-300  bg-gray-800 px-4 py-3 sm:px-6"
+          key={rows}
+        >
+          <div>
+            <p className="text-sm text-white invisible md:visible">
+              Total Quality Control <span className="font-medium">{rows}</span>
+              {" | "}
+              <span className="font-medium">
+                Halaman {rows ? page + 1 : 0}
+              </span>{" "}
+              dari <span className="font-medium">{pages}</span>
+            </p>
+          </div>
+          <div>
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={Math.min(10, pages)}
+              onPageChange={changePage}
+              containerClassName={
+                "isolate inline-flex -space-x-px rounded-md shadow-sm"
+              }
+              pageLinkClassName={
+                "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-400 ring-1 ring-inset ring-gray-300 hover:text-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              }
+              previousLinkClassName={
+                "relative inline-flex items-center rounded-l-md text-sm px-4 py-2 text-gray-400 font-semibold hover:text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 bg-gray-800 focus:z-20 focus:outline-offset-0"
+              }
+              nextLinkClassName={
+                "relative inline-flex items-center rounded-r-md text-sm px-4 py-2 text-gray-400 font-semibold ring-1 ring-inset hover:text-gray-700 ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              }
+              activeLinkClassName={
+                "relative inline-flex items-center bg-gray-700 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              }
+              disabledLinkClassName={""}
+            />
+          </div>
         </div>
       </div>
     </div>

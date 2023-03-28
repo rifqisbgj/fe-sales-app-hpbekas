@@ -515,8 +515,9 @@ const ListProduct = () => {
               Total produk <span className="font-medium">{rows}</span>
               {" | "}
               <span className="font-medium">
-                Page {rows ? page + 1 : 0}
-              </span> of <span className="font-medium">{pages}</span>
+                Halaman {rows ? page + 1 : 0}
+              </span>{" "}
+              dari <span className="font-medium">{pages}</span>
             </p>
           </div>
           <div>
