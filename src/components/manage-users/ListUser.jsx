@@ -8,6 +8,7 @@ import AlertSuccess from "../alert/AlertSuccess";
 import ModalDeleteUser from "./ModalDeleteUser";
 import { ModalUpdateUser } from "./ModalUpdateUser";
 import moment from "moment/moment";
+import ReactPaginate from "react-paginate";
 
 const ListUser = () => {
   const navigate = useNavigate();
@@ -29,11 +30,21 @@ const ListUser = () => {
   const [isScsDelete, setSczDelete] = useState(false);
   // jika sukses update
   const [isUpdated, setUpdated] = useState(false);
+  const [isLoading, setLoading] = useState(true);
 
   // user email for delete/update
   const [email, setEmail] = useState("");
   // id user for update
   const [idUserUpdate, setIdUser] = useState("");
+  const [message, setMsg] = useState("");
+
+  // pagination
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [pages, setPages] = useState(0);
+  const [rows, setRows] = useState(0);
+  const [keyword, setKeyword] = useState("");
+  const [role, setRole] = useState("");
 
   useEffect(
     () => {
@@ -42,7 +53,7 @@ const ListUser = () => {
       // mengambil data akun
       getAdminUsers();
     }, // data akan direfresh jika status success berubah
-    [isSuccess, isScsDelete, isUpdated]
+    [isSuccess, isScsDelete, isUpdated, page, keyword, role]
   );
 
   // get fresh access token
@@ -90,14 +101,21 @@ const ListUser = () => {
   // get account from db
   const getAdminUsers = async () => {
     // Ambil data user api yang sudah terconfig sebelumnya
-    const res = await privateApi.get("/users", {
-      // proses pengambilan data dilakukan dengan pemberian headers Authorization
-      headers: {
-        Authorization: token,
-      },
-    });
+    const res = await privateApi.get(
+      `/users?search_query=${keyword}&page=${page}&limit=${limit}&role=${role}`,
+      {
+        // proses pengambilan data dilakukan dengan pemberian headers Authorization
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
     // set data user
     setDataUsers(res.data.data);
+    setPage(res.data.page);
+    setPages(res.data.totalPage);
+    setRows(res.data.totalRows);
+    setLoading(false);
   };
 
   // get account data for delete, and show modal
@@ -135,6 +153,27 @@ const ListUser = () => {
     setSczDelete(false);
     // reset status sukses create
     setSuccess(false);
+  };
+
+  const changePage = ({ selected }) => {
+    setPage(selected);
+    if (selected === 9) {
+      setMsg(
+        "Jika tidak menemukan data yang Anda cari, silahkan cari data dengan kata kunci spesifik!"
+      );
+    } else {
+      setMsg("");
+    }
+  };
+
+  const cariPengguna = (e) => {
+    setPage(0);
+    setKeyword(e);
+  };
+
+  const filterRole = (e) => {
+    setPage(0);
+    setRole(e);
   };
 
   return (
@@ -177,6 +216,44 @@ const ListUser = () => {
         >
           Tambah Admin
         </button>
+        <form>
+          <div class="-mx-3 md:flex mb-2">
+            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Cari Pengguna
+              </label>
+              <input
+                type="text"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Nama atau email pengguna"
+                onChange={(e) => cariPengguna(e.target.value)}
+              />
+            </div>
+            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Filter Role Pengguna
+              </label>
+              <select
+                id="countries"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                onChange={(e) => filterRole(e.target.value)}
+              >
+                <option value="" selected>
+                  Semua Role
+                </option>
+                <option value="super">Super</option>
+                <option value="adminSale">Admin Penjualan</option>
+                <option value="adminQC">Admin Quality Control</option>
+              </select>
+            </div>
+          </div>
+        </form>
         {/* Notif jika berhasil membuat atau menghapus data */}
         {isSuccess && <AlertSuccess msg="Akun admin berhasil ditambahkan" />}
         {isScsDelete && <AlertSuccess msg="Berhasil menghapus akun" />}
@@ -185,7 +262,6 @@ const ListUser = () => {
           <table class="table-auto w-full whitespace-no-wrap overflow-scroll">
             <thead>
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                <th class="px-4 py-3">No</th>
                 <th class="px-4 py-3">Nama</th>
                 <th class="px-4 py-3">Role</th>
                 <th className="px-4 py-3">Tanggal Gabung</th>
@@ -193,9 +269,29 @@ const ListUser = () => {
               </tr>
             </thead>
             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+              {!isLoading && dataUsers.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="text-center text-gray-400 py-3 font-medium"
+                  >
+                    Ups... Data Pengguna tidak tersedia, ubah filter data atau
+                    kata kunci pencarian mu
+                  </td>
+                </tr>
+              )}
+              {isLoading && (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="text-center text-gray-400 py-3 font-medium"
+                  >
+                    Loading ...
+                  </td>
+                </tr>
+              )}
               {dataUsers.map((user, indx) => (
-                <tr class="text-gray-700 dark:text-gray-400" key={user.email}>
-                  <td class="px-4 py-3 text-sm">{indx + 1}</td>
+                <tr class="text-gray-700 dark:text-gray-400" key={indx}>
                   <td class="px-4 py-3">
                     <div class="flex items-center text-sm">
                       <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
@@ -276,6 +372,45 @@ const ListUser = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div
+          className="flex items-center justify-between border-t border-gray-300  bg-gray-800 px-4 py-3 sm:px-6"
+          key={rows}
+        >
+          <div>
+            <p className="text-sm text-white invisible md:visible">
+              Total user <span className="font-medium">{rows}</span>
+              {" | "}
+              <span className="font-medium">
+                Halaman {rows ? page + 1 : 0}
+              </span>{" "}
+              dari <span className="font-medium">{pages}</span>
+            </p>
+          </div>
+          <div>
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={Math.min(10, pages)}
+              onPageChange={changePage}
+              containerClassName={
+                "isolate inline-flex -space-x-px rounded-md shadow-sm"
+              }
+              pageLinkClassName={
+                "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-400 ring-1 ring-inset ring-gray-300 hover:text-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              }
+              previousLinkClassName={
+                "relative inline-flex items-center rounded-l-md text-sm px-4 py-2 text-gray-400 font-semibold hover:text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 bg-gray-800 focus:z-20 focus:outline-offset-0"
+              }
+              nextLinkClassName={
+                "relative inline-flex items-center rounded-r-md text-sm px-4 py-2 text-gray-400 font-semibold ring-1 ring-inset hover:text-gray-700 ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              }
+              activeLinkClassName={
+                "relative inline-flex items-center bg-gray-700 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              }
+              disabledLinkClassName={""}
+            />
+          </div>
         </div>
       </div>
     </div>

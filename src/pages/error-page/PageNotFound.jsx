@@ -101,7 +101,7 @@ const PageNotFound = () => {
             <span>4 0 4</span>
           </span>
           <span class="text-gray-500 text-xl">
-            Sorry, We couldn't find what you are looking for!
+            Maaf, kami tidak menemukan produk atau halaman yang kamu cari
           </span>
         </div>
         <center className="mt-5">

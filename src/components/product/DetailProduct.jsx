@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import privateApi from "../../api/privateApi";
 import MainNav from "../navbar/MainNav";
 import ImagesProduct from "./CompDetail/ImagesProduct";
@@ -8,6 +8,7 @@ import RecommendByNewest from "./CompDetail/RecommendByNewest";
 import SideBarInformation from "./CompDetail/SideBarInformation";
 
 const DetailProduct = () => {
+  const navigate = useNavigate();
   const [time, setTime] = useState(new Date().getHours());
   const [dataProduk, setData] = useState([]);
   const [dataProdukByBrand, setDataByBrand] = useState([]);
@@ -55,9 +56,7 @@ const DetailProduct = () => {
       const dataByBrand = await resDataBrand.data.data;
       setDataByBrand(dataByBrand.filter((e) => e.id !== data.id));
     } catch (error) {
-      if (error.response) {
-        navigate("/");
-      }
+      navigate("/404");
     }
   };
 

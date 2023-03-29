@@ -59,7 +59,7 @@ const ViewProduct = () => {
       setData(data);
     } catch (error) {
       if (error.response) {
-        navigate("/");
+        navigate("/404");
       }
     }
   };
