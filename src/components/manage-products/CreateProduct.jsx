@@ -6,6 +6,7 @@ import privateApi from "../../api/privateApi";
 import AlertFailed from "../alert/AlertFailed";
 import ReactQuill from "react-quill";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
+import ModalSuccess from "../modal/ModalSuccess";
 
 const CreateProduct = () => {
   // state produk attribute
@@ -23,6 +24,9 @@ const CreateProduct = () => {
   //   get all brand
   const [brand, setBrand] = useState([]);
   const [allVarian, setAllVarian] = useState([]);
+
+  const [newSlug, setSlug] = useState("");
+  const [isCreatead, setCreated] = useState(false);
 
   // redirect
   const navigate = useNavigate();
@@ -111,7 +115,8 @@ const CreateProduct = () => {
         },
         { headers: { Authorization: token } }
       );
-      navigate("/dashboard/produk");
+      setSlug(res.data.data.slug);
+      setCreated(true);
     } catch (error) {
       if (error.response) {
         error.response.data.length === 1
@@ -125,6 +130,13 @@ const CreateProduct = () => {
 
   return (
     <div className="container grid px-6 mx-auto">
+      {isCreatead && (
+        <ModalSuccess
+          msg={"Data produk berhasil ditambahkan"}
+          urlCancel={`/dashboard/produk`}
+          urlContinue={`/dashboard/produk/view/${newSlug}`}
+        />
+      )}
       <nav class="flex my-6" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
           <li class="inline-flex items-center">

@@ -6,6 +6,8 @@ import AlertFailed from "../alert/AlertFailed";
 import ReactQuill from "react-quill";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
 import ChangeImages from "./ChangeImages";
+import AlertSuccess from "../alert/AlertSuccess";
+import ModalSuccess from "../modal/ModalSuccess";
 
 const UpdateProduct = () => {
   // state produk
@@ -19,6 +21,7 @@ const UpdateProduct = () => {
   const [statusproduk, setStatusProduk] = useState("");
   const [oldimage, setOldImage] = useState([]);
   const [idproduk, setIdProduk] = useState("");
+  const [newSlug, setNewSlug] = useState("");
   const [isHaveQC, setHaveQC] = useState(false);
   // token for update product
   const [token, setToken] = useState("");
@@ -29,6 +32,7 @@ const UpdateProduct = () => {
   const [allVarian, setAllVarian] = useState([]);
 
   // status update, create,delete
+  const [isDataUpdate, setUpdateProduct] = useState(false);
   const [isUpdateImg, setUpdateImg] = useState(false);
   const [isCreateImg, setCreateImg] = useState(false);
   const [isDeleteImg, setDeleteImg] = useState(false);
@@ -135,9 +139,8 @@ const UpdateProduct = () => {
 
   // update product to db when click submit
   const handleSubmit = async () => {
-    console.log(harga.toString());
     try {
-      await privateApi.put(
+      const res = await privateApi.put(
         `/product/update/${slug}`,
         {
           imei: imei,
@@ -151,7 +154,8 @@ const UpdateProduct = () => {
         },
         { headers: { Authorization: token } }
       );
-      navigate("/dashboard/produk");
+      setNewSlug(res.data.data.slug);
+      setUpdateProduct(true);
     } catch (error) {
       if (error.response) {
         error.response.data.length === 1
@@ -165,6 +169,13 @@ const UpdateProduct = () => {
 
   return (
     <div className="container grid px-6 mx-auto">
+      {isDataUpdate && (
+        <ModalSuccess
+          msg={"Data produk berhasil diperbarui"}
+          urlCancel={`/dashboard/produk`}
+          urlContinue={`/dashboard/produk/edit/${newSlug}`}
+        />
+      )}
       <h2 className="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
         Update Produk
       </h2>

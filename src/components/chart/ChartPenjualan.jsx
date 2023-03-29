@@ -1,4 +1,3 @@
-import React from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,58 +9,95 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useState } from "react";
+import { useEffect } from "react";
+import privateApi from "../../api/privateApi";
+import moment from "moment";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+const ChartPenjualan = ({ token }) => {
+  const [dataPenjualan, setData] = useState([]);
+  useEffect(() => {
+    getDataPenjualan();
+  }, []);
 
-const options = {
-  plugins: {
-    responsive: true,
-    /**
-     * Default legends are ugly and impossible to style.
-     * See examples in charts.html to add your own legends
-     *  */
-    legend: {
-      display: false,
+  const getDataPenjualan = async () => {
+    const res = await privateApi.get(`/dashboard/tr`, {
+      headers: { Authorization: token },
+    });
+    setData(res.data.data);
+  };
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+
+  const options = {
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        ticks: {
+          color: "rgba(255, 235, 235, 0.636)",
+          stepSize: 1,
+        },
+        grid: {
+          color: "rgba(184, 163, 163, 0.432)",
+        },
+      },
+      y: {
+        ticks: {
+          color: "rgba(255, 235, 235, 0.636)",
+        },
+        grid: {
+          color: "rgba(184, 163, 163, 0.432)",
+        },
+      },
     },
-    tooltips: {
-      mode: "index",
-      intersect: false,
+    plugins: {
+      responsive: true,
+      /**
+       * Default legends are ugly and impossible to style.
+       * See examples in charts.html to add your own legends
+       *  */
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        mode: "index",
+        intersect: false,
+      },
+      hover: {
+        mode: "nearest",
+        intersect: true,
+      },
     },
-    hover: {
-      mode: "nearest",
-      intersect: true,
-    },
-  },
-};
+  };
 
-// memberikan label pada grafik
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
+  // memberikan label pada grafik
+  const labels =
+    dataPenjualan &&
+    dataPenjualan.map((data) => moment(data.tanggal).format("dddd Do YYYY"));
 
-// data grafik
-const data = {
-  labels,
-  // data set dari hasil penjualan
-  datasets: [
-    {
-      label: "Dataset 1",
-      data: [250000, 350000, 400000, 601000, 230000, 900000, 120000],
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-  ],
-};
-
-const ChartPenjualan = () => {
+  // data grafik
+  const data = {
+    labels,
+    // data set dari hasil penjualan
+    datasets: [
+      {
+        label: "Pendapatan",
+        data: dataPenjualan && dataPenjualan.map((data) => data.pendapatan),
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  };
   // memanggil Line chart dari react-chartjs
-  return <Line options={options} data={data} />;
+  return <Line options={options} data={data} className="h-60 md:h-72" />;
 };
 
 export default ChartPenjualan;

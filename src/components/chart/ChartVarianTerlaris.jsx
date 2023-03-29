@@ -13,15 +13,15 @@ import { useState } from "react";
 import { useEffect } from "react";
 import privateApi from "../../api/privateApi";
 
-const ChartBrandTerlaris = ({ token }) => {
-  const [brandLaris, setData] = useState([]);
+const ChartVarianTerlaris = ({ token }) => {
+  const [varianLaris, setData] = useState([]);
   useEffect(() => {
     getBrandLaris();
   }, []);
 
   const getBrandLaris = async () => {
     console.log(token);
-    const res = await privateApi.get(`/dashboard/brandSold`, {
+    const res = await privateApi.get(`/dashboard/varianSold`, {
       headers: { Authorization: token },
     });
     setData(res.data.data);
@@ -68,15 +68,15 @@ const ChartBrandTerlaris = ({ token }) => {
     plugins: {},
   };
 
-  const labels = brandLaris && brandLaris.map((data) => data.namamerek);
+  const labels = varianLaris && varianLaris.map((data) => data.namavarian);
 
   const data = {
     labels,
     datasets: [
       {
-        label: "Brand Terlaris",
+        label: "Varian Terlaris",
         data:
-          brandLaris && brandLaris.map((data) => parseInt(data.total_merek)),
+          varianLaris && varianLaris.map((data) => parseInt(data.total_varian)),
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
@@ -85,4 +85,4 @@ const ChartBrandTerlaris = ({ token }) => {
   return <Bar options={options} data={data} className="text-white" />;
 };
 
-export default ChartBrandTerlaris;
+export default ChartVarianTerlaris;
